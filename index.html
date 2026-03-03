@@ -1,0 +1,2525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherStones — Council of Green Point</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════════════
+   ROOT & BASE
+═══════════════════════════════════════════════════ */
+        :root {
+            --bg: #040410;
+            --surf1: #08081e;
+            --surf2: #0d0d28;
+            --border: #1c1c40;
+            --text: #8888b8;
+            --text-hi: #d4d8ff;
+
+            /* Elements */
+            --earth: #5fba6f;
+            --earth-d: #1a3a1e;
+            --water: #3a9fff;
+            --water-d: #0a1e3a;
+            --wind: #7ee8e8;
+            --wind-d: #0a2a2a;
+            --fire: #ff6535;
+            --fire-d: #3a1008;
+
+            /* Player / AI */
+            --player: #00e5ff;
+            --player-d: #001a2e;
+            --ai: #ff3860;
+            --ai-d: #2e0010;
+
+            --gold: #ffd700;
+            --gold-d: #2a2000;
+
+            --gp: 0 0 20px #00e5ff55;
+            --ga: 0 0 20px #ff386055;
+            --gg: 0 0 20px #ffd70066;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--text-hi);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Starfield */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 40% at 50% -5%, #0c0c30 0%, transparent 55%),
+                radial-gradient(1.5px 1.5px at 8% 15%, rgba(255, 255, 255, .5), transparent),
+                radial-gradient(1px 1px at 91% 9%, rgba(255, 255, 255, .4), transparent),
+                radial-gradient(2px 2px at 42% 30%, rgba(255, 255, 255, .3), transparent),
+                radial-gradient(1px 1px at 67% 70%, rgba(255, 255, 255, .3), transparent),
+                radial-gradient(1.5px 1.5px at 23% 80%, rgba(255, 255, 255, .4), transparent),
+                radial-gradient(1px 1px at 77% 50%, rgba(255, 255, 255, .25), transparent),
+                radial-gradient(1px 1px at 55% 92%, rgba(255, 255, 255, .35), transparent),
+                radial-gradient(2px 2px at 13% 55%, rgba(255, 255, 255, .2), transparent),
+                radial-gradient(1px 1px at 88% 85%, rgba(255, 255, 255, .3), transparent);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .z1 {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ═══════════════════════════════════════════════════
+   SCREENS
+═══════════════════════════════════════════════════ */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* ═══════════════════════════════════════════════════
+   SHARED COMPONENTS
+═══════════════════════════════════════════════════ */
+        .title-text {
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00e5ff, #8b6dff, #ff3860);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 25px #00e5ff44);
+        }
+
+        .btn {
+            background: var(--surf2);
+            border: 1px solid var(--border);
+            color: var(--text-hi);
+            font-family: 'Orbitron', monospace;
+            font-size: .6rem;
+            letter-spacing: .15em;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .btn:hover:not(:disabled) {
+            border-color: var(--player);
+            color: var(--player);
+            box-shadow: var(--gp);
+        }
+
+        .btn:disabled {
+            opacity: .35;
+            cursor: not-allowed;
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, var(--player-d), #003a5a);
+            border-color: var(--player);
+            color: var(--player);
+            box-shadow: var(--gp);
+        }
+
+        .btn.gold {
+            background: linear-gradient(135deg, var(--gold-d), #3a3000);
+            border-color: var(--gold);
+            color: var(--gold);
+            box-shadow: var(--gg);
+        }
+
+        .deco-bar {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--player), #7b68ff, var(--ai), transparent);
+            border-radius: 1px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: .6rem;
+            letter-spacing: .1em;
+            font-family: 'Orbitron', monospace;
+            border: 1px solid;
+        }
+
+        .chip.earth {
+            color: var(--earth);
+            border-color: var(--earth);
+            background: var(--earth-d);
+        }
+
+        .chip.water {
+            color: var(--water);
+            border-color: var(--water);
+            background: var(--water-d);
+        }
+
+        .chip.wind {
+            color: var(--wind);
+            border-color: var(--wind);
+            background: var(--wind-d);
+        }
+
+        .chip.fire {
+            color: var(--fire);
+            border-color: var(--fire);
+            background: var(--fire-d);
+        }
+
+        .chip.neutral {
+            color: var(--text);
+            border-color: var(--border);
+            background: var(--surf2);
+        }
+
+        /* XP Bar */
+        .xp-bar-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .xp-label {
+            font-family: 'Orbitron', monospace;
+            font-size: .48rem;
+            letter-spacing: .3em;
+            color: var(--text);
+        }
+
+        .xp-track {
+            width: 120px;
+            height: 4px;
+            background: var(--surf2);
+            border-radius: 2px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--player), var(--gold));
+            border-radius: 2px;
+            transition: width .6s ease;
+        }
+
+        /* ═══════════════════════════════════════════════════
+   MENU SCREEN
+═══════════════════════════════════════════════════ */
+        #screen-menu {
+            justify-content: center;
+            gap: 28px;
+        }
+
+        .menu-title {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            text-align: center;
+            line-height: 1;
+        }
+
+        .menu-subtitle {
+            font-family: 'Orbitron', monospace;
+            font-size: .58rem;
+            letter-spacing: .5em;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .menu-tagline {
+            font-size: 1.1rem;
+            color: var(--text);
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        .menu-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .level-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 28px;
+            background: var(--surf1);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .level-num {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            text-shadow: var(--gg);
+        }
+
+        /* ═══════════════════════════════════════════════════
+   CHARACTER SELECT SCREEN
+═══════════════════════════════════════════════════ */
+        #screen-charselect {
+            gap: 20px;
+            max-width: 960px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .charselect-header {
+            text-align: center;
+        }
+
+        .charselect-title {
+            font-size: clamp(1.5rem, 4vw, 2.4rem);
+        }
+
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+
+        .char-card {
+            background: var(--surf1);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 12px;
+            cursor: pointer;
+            transition: all .25s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .char-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity .3s;
+            border-radius: inherit;
+        }
+
+        .char-card.earth::before {
+            background: radial-gradient(ellipse at center, var(--earth-d) 0%, transparent 70%);
+        }
+
+        .char-card.water::before {
+            background: radial-gradient(ellipse at center, var(--water-d) 0%, transparent 70%);
+        }
+
+        .char-card.wind::before {
+            background: radial-gradient(ellipse at center, var(--wind-d) 0%, transparent 70%);
+        }
+
+        .char-card.fire::before {
+            background: radial-gradient(ellipse at center, var(--fire-d) 0%, transparent 70%);
+        }
+
+        .char-card:hover:not(.locked)::before {
+            opacity: 1;
+        }
+
+        .char-card:hover:not(.locked) {
+            transform: translateY(-3px);
+        }
+
+        .char-card.earth:hover:not(.locked) {
+            border-color: var(--earth);
+            box-shadow: 0 0 20px var(--earth-d);
+        }
+
+        .char-card.water:hover:not(.locked) {
+            border-color: var(--water);
+            box-shadow: 0 0 20px var(--water-d);
+        }
+
+        .char-card.wind:hover:not(.locked) {
+            border-color: var(--wind);
+            box-shadow: 0 0 20px var(--wind-d);
+        }
+
+        .char-card.fire:hover:not(.locked) {
+            border-color: var(--fire);
+            box-shadow: 0 0 20px var(--fire-d);
+        }
+
+        .char-card.selected.earth {
+            border-color: var(--earth) !important;
+            box-shadow: 0 0 25px #5fba6f88 !important;
+        }
+
+        .char-card.selected.water {
+            border-color: var(--water) !important;
+            box-shadow: 0 0 25px #3a9fff88 !important;
+        }
+
+        .char-card.selected.wind {
+            border-color: var(--wind) !important;
+            box-shadow: 0 0 25px #7ee8e888 !important;
+        }
+
+        .char-card.selected.fire {
+            border-color: var(--fire) !important;
+            box-shadow: 0 0 25px #ff653588 !important;
+        }
+
+        .char-card.locked {
+            cursor: not-allowed;
+            opacity: .5;
+        }
+
+        .lock-overlay {
+            position: absolute;
+            inset: 0;
+            background: #00000088;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: inherit;
+            font-family: 'Orbitron', monospace;
+            font-size: .5rem;
+            letter-spacing: .2em;
+            color: var(--text);
+        }
+
+        .lock-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Character portrait */
+        .char-portrait {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            border: 2px solid;
+            flex-shrink: 0;
+        }
+
+        .char-portrait::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 1px dashed;
+            opacity: .3;
+            animation: spin 12s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .earth .char-portrait {
+            background: radial-gradient(circle, #2a5a2e, #1a3a1e);
+            border-color: var(--earth);
+        }
+
+        .earth .char-portrait::after {
+            border-color: var(--earth);
+        }
+
+        .water .char-portrait {
+            background: radial-gradient(circle, #0a2a5a, #0a1e3a);
+            border-color: var(--water);
+        }
+
+        .water .char-portrait::after {
+            border-color: var(--water);
+        }
+
+        .wind .char-portrait {
+            background: radial-gradient(circle, #0a3a3a, #0a2a2a);
+            border-color: var(--wind);
+        }
+
+        .wind .char-portrait::after {
+            border-color: var(--wind);
+        }
+
+        .fire .char-portrait {
+            background: radial-gradient(circle, #4a1a0a, #3a1008);
+            border-color: var(--fire);
+        }
+
+        .fire .char-portrait::after {
+            border-color: var(--fire);
+        }
+
+        .char-name {
+            font-family: 'Cinzel', serif;
+            font-size: .78rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .char-title {
+            font-size: .65rem;
+            color: var(--text);
+            font-style: italic;
+            line-height: 1.3;
+        }
+
+        .char-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .char-role {
+            font-size: .6rem;
+            color: var(--text);
+            letter-spacing: .05em;
+        }
+
+        .char-stones {
+            font-family: 'Orbitron', monospace;
+            font-size: .5rem;
+            letter-spacing: .2em;
+            color: var(--text);
+        }
+
+        /* Ability preview */
+        .char-ability-box {
+            background: var(--surf2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 10px;
+            width: 100%;
+            font-size: .62rem;
+            color: var(--text);
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .char-ability-box strong {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Confirm panel */
+        .charselect-confirm {
+            background: var(--surf1);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .confirm-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .confirm-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .confirm-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .confirm-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ═══════════════════════════════════════════════════
+   GAME SCREEN
+═══════════════════════════════════════════════════ */
+        #screen-game {
+            gap: 14px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 30px;
+        }
+
+        /* Character strip */
+        .char-strip {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 16px;
+            background: var(--surf1);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .strip-portrait {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            border: 2px solid;
+            flex-shrink: 0;
+        }
+
+        .strip-info {
+            flex: 1;
+        }
+
+        .strip-name {
+            font-family: 'Cinzel', serif;
+            font-size: .9rem;
+            font-weight: 700;
+        }
+
+        .strip-title {
+            font-size: .65rem;
+            color: var(--text);
+        }
+
+        .strip-scores {
+            display: flex;
+            gap: 20px;
+        }
+
+        .strip-score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .strip-score-label {
+            font-family: 'Orbitron', monospace;
+            font-size: .45rem;
+            letter-spacing: .25em;
+            color: var(--text);
+        }
+
+        .strip-score-num {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .strip-score-num.player-col {
+            color: var(--player);
+            text-shadow: var(--gp);
+        }
+
+        .strip-score-num.ai-col {
+            color: var(--ai);
+            text-shadow: var(--ga);
+        }
+
+        .turn-pill {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-family: 'Orbitron', monospace;
+            font-size: .5rem;
+            letter-spacing: .2em;
+            border: 1px solid;
+            transition: all .3s;
+        }
+
+        .turn-pill.player-turn {
+            border-color: var(--player);
+            color: var(--player);
+            background: var(--player-d);
+        }
+
+        .turn-pill.ai-turn {
+            border-color: var(--ai);
+            color: var(--ai);
+            background: var(--ai-d);
+        }
+
+        /* Status */
+        .status-bar {
+            width: 100%;
+            text-align: center;
+            padding: 9px 20px;
+            background: var(--surf1);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: .9rem;
+            font-weight: 500;
+            letter-spacing: .04em;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .3s;
+        }
+
+        @keyframes thinking {
+
+            0%,
+            100% {
+                opacity: .35
+            }
+
+            50% {
+                opacity: 1
+            }
+        }
+
+        .thinking {
+            animation: thinking .8s ease infinite;
+            color: var(--ai);
+        }
+
+        /* Game area layout */
+        .game-layout {
+            display: grid;
+            grid-template-columns: 200px 1fr auto;
+            gap: 16px;
+            width: 100%;
+            align-items: start;
+        }
+
+        /* Hand / Ability panel */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-box {
+            background: var(--surf1);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-label {
+            font-family: 'Orbitron', monospace;
+            font-size: .5rem;
+            letter-spacing: .3em;
+            color: var(--text);
+            text-align: center;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Hand tiles */
+        .hand-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            justify-items: center;
+        }
+
+        .hand-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .hand-slot-num {
+            font-family: 'Orbitron', monospace;
+            font-size: .42rem;
+            color: var(--text);
+            letter-spacing: .1em;
+        }
+
+        .hand-tile-wrap {
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            position: relative;
+            transition: transform .15s;
+        }
+
+        .hand-tile-wrap:hover {
+            transform: scale(1.06);
+        }
+
+        .hand-tile-wrap.selected .tile-inner {
+            border-color: var(--gold) !important;
+            box-shadow: var(--gg), inset 0 0 20px #ffd70011 !important;
+        }
+
+        .hand-tile-wrap.ability-target .tile-inner {
+            border-color: #ff00ff !important;
+            box-shadow: 0 0 15px #ff00ff88 !important;
+            animation: pulse-magenta .5s ease infinite alternate;
+        }
+
+        @keyframes pulse-magenta {
+            to {
+                box-shadow: 0 0 25px #ff00ffaa !important;
+            }
+        }
+
+        /* Rotate row */
+        .rotate-row {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        /* Ability button */
+        .ability-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .ability-btn .ab-name {
+            font-family: 'Orbitron', monospace;
+            font-size: .55rem;
+            letter-spacing: .15em;
+        }
+
+        .ability-btn .ab-desc {
+            font-size: .65rem;
+            color: var(--text);
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .ability-btn.earth {
+            background: var(--earth-d);
+            border-color: var(--earth);
+            color: var(--earth);
+        }
+
+        .ability-btn.water {
+            background: var(--water-d);
+            border-color: var(--water);
+            color: var(--water);
+        }
+
+        .ability-btn.wind {
+            background: var(--wind-d);
+            border-color: var(--wind);
+            color: var(--wind);
+        }
+
+        .ability-btn.fire {
+            background: var(--fire-d);
+            border-color: var(--fire);
+            color: var(--fire);
+        }
+
+        .ability-btn:hover:not(:disabled):not(.ability-active) {
+            filter: brightness(1.3);
+            transform: scale(1.02);
+        }
+
+        .ability-btn:disabled {
+            opacity: .3;
+            cursor: not-allowed;
+        }
+
+        .ability-btn.ability-active {
+            animation: ability-glow .6s ease infinite alternate;
+            cursor: crosshair;
+        }
+
+        @keyframes ability-glow {
+            to {
+                filter: brightness(1.5);
+                box-shadow: 0 0 20px currentColor;
+            }
+        }
+
+        /* Board */
+        .board-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 7px;
+            padding: 18px;
+            background: var(--surf1);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: inset 0 0 50px #00000088;
+        }
+
+        /* CELL */
+        .cell {
+            width: 86px;
+            height: 86px;
+            position: relative;
+            cursor: default;
+            transition: transform .15s;
+        }
+
+        .cell.placeable {
+            cursor: pointer;
+        }
+
+        .cell.placeable:hover {
+            transform: scale(1.04);
+        }
+
+        /* Octagonal tile shape via clip-path */
+        .tile-shape {
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+            position: absolute;
+            inset: 0;
+        }
+
+        /* Floating tile (dragged/placed/pending) */
+        .tile-floating {
+            transform: scale(1.15);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .tile-sinking {
+            transform: scale(1) !important;
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0) !important;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s !important;
+        }
+
+        .tile-empty {
+            background: var(--surf2);
+            border: 1px dashed var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            transition: all .2s;
+        }
+
+        .cell.placeable .tile-empty {
+            border-color: var(--player);
+            border-style: solid;
+            background: #001a2e55;
+            box-shadow: inset 0 0 14px #00e5ff18;
+        }
+
+        .tile-empty::after {
+            content: '+';
+            color: var(--border);
+            font-size: 1.1rem;
+            opacity: .6;
+        }
+
+        .cell.placeable .tile-empty::after {
+            color: var(--player);
+            opacity: .5;
+        }
+
+        /* Placed tile */
+        .tile-placed {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .tile-inner {
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all .3s;
+        }
+
+        .tile-inner.pt {
+            background: linear-gradient(135deg, var(--player-d), #003355);
+            border: 2px solid var(--player);
+            box-shadow: var(--gp), inset 0 0 15px #00e5ff0d;
+        }
+
+        .tile-inner.at {
+            background: linear-gradient(135deg, var(--ai-d), #550020);
+            border: 2px solid var(--ai);
+            box-shadow: var(--ga), inset 0 0 15px #ff38600d;
+        }
+
+        /* Elemental tint on tiles */
+        .tile-inner.elem-earth {
+            border-color: var(--earth) !important;
+        }
+
+        .tile-inner.elem-water {
+            border-color: var(--water) !important;
+        }
+
+        .tile-inner.elem-wind {
+            border-color: var(--wind) !important;
+        }
+
+        .tile-inner.elem-fire {
+            border-color: var(--fire) !important;
+        }
+
+        /* Edge values */
+        .ev {
+            position: absolute;
+            font-family: 'Orbitron', monospace;
+            font-size: .7rem;
+            font-weight: 700;
+            line-height: 1;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .ev-n {
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .ev-s {
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .ev-w {
+            left: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .ev-e {
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .pt .ev {
+            color: var(--player);
+        }
+
+        .at .ev {
+            color: var(--ai);
+        }
+
+        /* Special markers */
+        .tile-center {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .pt .tile-center {
+            background: var(--player);
+            box-shadow: var(--gp);
+        }
+
+        .at .tile-center {
+            background: var(--ai);
+            box-shadow: var(--ga);
+        }
+
+        /* Petrified tile */
+        .tile-inner.petrified::before {
+            content: '⬡';
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #888;
+            opacity: .25;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .tile-inner.petrified {
+            border-color: #aaa !important;
+        }
+
+        /* Boost glow */
+        .tile-inner.boosted {
+            animation: boost-glow .4s ease 4;
+        }
+
+        @keyframes boost-glow {
+
+            0%,
+            100% {
+                filter: brightness(1)
+            }
+
+            50% {
+                filter: brightness(1.6)
+            }
+        }
+
+        /* Capture animation */
+        @keyframes capture-pop {
+            0% {
+                transform: scale(1)
+            }
+
+            30% {
+                transform: scale(1.17);
+                opacity: .5
+            }
+
+            65% {
+                transform: scale(.93)
+            }
+
+            100% {
+                transform: scale(1)
+            }
+        }
+
+        .capturing {
+            animation: capture-pop .4s ease;
+        }
+
+        /* AI target indicator */
+        .cell.ability-selectable {
+            cursor: crosshair;
+        }
+
+        .cell.ability-selectable .tile-inner {
+            outline: 2px dashed #ff00ff;
+        }
+
+        /* Right panel — AI and legend */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 160px;
+        }
+
+        .ai-box {
+            background: var(--surf1);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .ai-portrait {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #2a0010, #1a000a);
+            border: 2px solid var(--ai);
+            box-shadow: var(--ga);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+        }
+
+        .ai-name {
+            font-family: 'Cinzel', serif;
+            font-size: .78rem;
+            font-weight: 700;
+            color: var(--ai);
+        }
+
+        .ai-title {
+            font-size: .6rem;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .ai-label {
+            font-family: 'Orbitron', monospace;
+            font-size: .45rem;
+            letter-spacing: .25em;
+            color: var(--text);
+        }
+
+        .ai-stones {
+            font-family: 'Orbitron', monospace;
+            font-size: .5rem;
+            letter-spacing: .15em;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .legend-box {
+            background: var(--surf1);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: .68rem;
+            line-height: 1.9;
+            color: var(--text);
+        }
+
+        .legend-box strong {
+            color: var(--gold);
+        }
+
+        .legend-box .elem-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: .6rem;
+        }
+
+        /* ═══════════════════════════════════════════════════
+   GAME OVER / LEVEL UP OVERLAY
+═══════════════════════════════════════════════════ */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: #000000cc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .5s;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .result-card {
+            background: var(--surf1);
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 40px 52px;
+            text-align: center;
+            box-shadow: var(--gg), 0 0 80px #00000088;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: center;
+            max-width: 420px;
+            width: 90%;
+        }
+
+        .result-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.4rem;
+            font-weight: 900;
+        }
+
+        .result-score {
+            font-family: 'Orbitron', monospace;
+            font-size: .9rem;
+            color: var(--text);
+            letter-spacing: .1em;
+        }
+
+        .result-flavour {
+            font-size: .85rem;
+            color: var(--text);
+            font-style: italic;
+        }
+
+        .xp-gained {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: var(--gold);
+        }
+
+        .new-stone-box {
+            background: var(--surf2);
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            padding: 10px 16px;
+            width: 100%;
+            font-size: .75rem;
+            color: var(--text-hi);
+            line-height: 1.6;
+        }
+
+        .new-stone-box strong {
+            color: var(--gold);
+        }
+
+        /* Responsive */
+        @media (max-width: 780px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .char-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cell {
+                width: 70px;
+                height: 70px;
+            }
+
+            .ev {
+                font-size: .6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .char-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cell {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ════════════════════════════════════════════
+     SCREEN: MENU
+════════════════════════════════════════════ -->
+    <div id="screen-menu" class="screen z1">
+        <div class="deco-bar" style="max-width:700px;width:100%;margin-bottom:8px;"></div>
+        <div class="menu-title title-text">AETHERSTONES</div>
+        <div class="menu-subtitle">Council of Green Point</div>
+
+        <div class="level-display">
+            <div class="menu-subtitle" style="font-size:.5rem;">SEEKER RANK</div>
+            <div class="level-num" id="menu-level">1</div>
+            <div class="xp-bar-wrap">
+                <div class="xp-label" id="menu-xp-label">0 / 100 XP</div>
+                <div class="xp-track">
+                    <div class="xp-fill" id="menu-xp-fill" style="width:0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-tagline">
+            Eight councilors. Four elements. One chaotic board.<br>
+            Rotate your stones, deploy your art, shatter the Oracle.
+        </div>
+
+        <div class="menu-buttons">
+            <button class="btn primary" style="font-size:.7rem;padding:12px 32px;" onclick="showCharSelect()">▶ ENTER
+                THE COUNCIL</button>
+            <button class="btn" onclick="showRules()">? RULES</button>
+        </div>
+        <div class="deco-bar" style="max-width:700px;width:100%;margin-top:8px;"></div>
+    </div>
+
+    <!-- ════════════════════════════════════════════
+     SCREEN: CHARACTER SELECT
+════════════════════════════════════════════ -->
+    <div id="screen-charselect" class="screen z1">
+        <div class="charselect-header">
+            <div class="charselect-title title-text">CHOOSE YOUR COUNCILOR</div>
+            <div class="menu-subtitle" style="margin-top:4px;">Each wields a different art. Each holds a different key.
+            </div>
+        </div>
+
+        <div class="char-grid" id="char-grid"></div>
+
+        <div class="charselect-confirm" id="charselect-confirm" style="display:none;">
+            <div class="confirm-info">
+                <div class="confirm-name" id="confirm-name"></div>
+                <div class="confirm-chips" id="confirm-chips"></div>
+                <div style="font-size:.72rem;color:var(--text);margin-top:4px;" id="confirm-ability"></div>
+            </div>
+            <div class="confirm-btns">
+                <button class="btn gold" style="font-size:.7rem;" onclick="startGame()">⚔ ENTER BATTLE</button>
+                <button class="btn" onclick="cancelSelect()">✕</button>
+            </div>
+        </div>
+
+        <button class="btn" onclick="showMenu()" style="align-self:flex-start;">← BACK</button>
+    </div>
+
+    <!-- ════════════════════════════════════════════
+     SCREEN: GAME
+════════════════════════════════════════════ -->
+    <div id="screen-game" class="screen z1">
+        <!-- Character strip / scores / turn -->
+        <div class="char-strip" id="char-strip">
+            <div class="strip-portrait" id="strip-portrait"></div>
+            <div class="strip-info">
+                <div class="strip-name" id="strip-name"></div>
+                <div class="strip-title" id="strip-title"></div>
+            </div>
+            <div class="strip-scores">
+                <div class="strip-score-item">
+                    <div class="strip-score-label">SEEKER</div>
+                    <div class="strip-score-num player-col" id="score-player">0</div>
+                </div>
+                <div class="strip-score-item">
+                    <div class="strip-score-label">VS</div>
+                    <div class="strip-score-num" style="color:var(--text);font-size:1rem;">·</div>
+                </div>
+                <div class="strip-score-item">
+                    <div class="strip-score-label">ORACLE</div>
+                    <div class="strip-score-num ai-col" id="score-ai">0</div>
+                </div>
+            </div>
+            <div class="turn-pill player-turn" id="turn-pill">
+                <span style="font-size:.45rem;letter-spacing:.25em;">TURN</span>
+                <span id="turn-who">SEEKER</span>
+            </div>
+        </div>
+
+        <!-- Status bar -->
+        <div class="status-bar" id="status-bar">Pick a tile from your hand, rotate, then place it on the board.</div>
+
+        <!-- Main layout -->
+        <div class="game-layout">
+            <!-- Left: hand + controls -->
+            <div class="left-panel">
+                <div class="panel-box">
+                    <div class="panel-label">YOUR HAND</div>
+                    <div class="hand-grid" id="hand-grid"></div>
+                    <div class="rotate-row">
+                        <button class="btn" id="rot-left" onclick="rotateSelected(-1)"
+                            style="font-size:.55rem;padding:7px 12px;">↺ CCW</button>
+                        <button class="btn" id="rot-right" onclick="rotateSelected(1)"
+                            style="font-size:.55rem;padding:7px 12px;">CW ↻</button>
+                    </div>
+                </div>
+                <!-- Ability -->
+                <button class="ability-btn" id="ability-btn" onclick="activateAbility()">
+                    <div class="ab-name" id="ab-name">ABILITY</div>
+                    <div class="ab-desc" id="ab-desc">—</div>
+                </button>
+
+                <div class="panel-box" style="font-size:.65rem;color:var(--text);gap:6px;">
+                    <div class="panel-label">QUICK GUIDE</div>
+                    <div>Pick tile → Rotate → Place</div>
+                    <div>Your edge <strong style="color:var(--player);">beats</strong> their edge → capture</div>
+                    <div><strong style="color:var(--gold);">Chain reactions</strong> cascade!</div>
+                    <div style="margin-top:4px;"><strong style="color:var(--gold);">Element Bonus:</strong></div>
+                    <div class="elem-row"><span style="color:var(--fire)">🔥</span> &gt; <span
+                            style="color:var(--earth)">🌿</span> &gt; <span style="color:var(--wind)">🌬️</span> &gt;
+                        <span style="color:var(--water)">💧</span> &gt; 🔥
+                    </div>
+                    <div style="font-size:.58rem;margin-top:2px;">Type advantage = +1 on compare</div>
+                </div>
+            </div>
+
+            <!-- Board -->
+            <div class="board-wrap">
+                <div class="board" id="board"></div>
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;">
+                    <div
+                        style="font-family:'Orbitron',monospace;font-size:.48rem;letter-spacing:.35em;color:var(--text);background:var(--surf2);border:1px solid var(--border);border-radius:20px;padding:3px 12px;">
+                        SPRINT 2 · COUNCIL UPDATE</div>
+                </div>
+            </div>
+
+            <!-- Right panel -->
+            <div class="right-panel">
+                <div class="ai-box">
+                    <div class="ai-portrait" id="ai-portrait">🤖</div>
+                    <div class="ai-name">ORACLE</div>
+                    <div class="ai-title">The Adversarial Mind</div>
+                    <div class="ai-label">ELEMENT</div>
+                    <div id="ai-element-chip"></div>
+                    <div class="ai-stones" id="ai-stones-label">Stones: —</div>
+                </div>
+
+                <div class="legend-box">
+                    <div class="panel-label" style="margin-bottom:6px;">ELEMENT WHEEL</div>
+                    <div class="elem-row">🔥 <span style="color:var(--fire)">Fire</span> beats 🌿 Earth</div>
+                    <div class="elem-row">🌿 <span style="color:var(--earth)">Earth</span> beats 🌬️ Wind</div>
+                    <div class="elem-row">🌬️ <span style="color:var(--wind)">Wind</span> beats 💧 Water</div>
+                    <div class="elem-row">💧 <span style="color:var(--water)">Water</span> beats 🔥 Fire</div>
+                    <div style="margin-top:8px;font-size:.6rem;">Advantage = +1 to<br>your comparing edge.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div class="overlay" id="overlay-gameover">
+        <div class="result-card">
+            <div class="result-title" id="res-title">VICTORY</div>
+            <div class="result-score" id="res-score"></div>
+            <div class="result-flavour" id="res-flavour"></div>
+            <div class="xp-gained" id="res-xp"></div>
+            <div class="new-stone-box" id="res-stone" style="display:none;"></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+                <button class="btn primary" onclick="replayGame()">▶ REMATCH</button>
+                <button class="btn gold" onclick="showCharSelect()">⚔ NEW COUNCILOR</button>
+                <button class="btn" onclick="showMenu()">☰ MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rules Overlay -->
+    <div class="overlay" id="overlay-rules">
+        <div class="result-card" style="max-width:480px;gap:10px;text-align:left;padding:32px 36px;">
+            <div
+                style="font-family:'Cinzel',serif;font-size:1.4rem;font-weight:900;text-align:center;color:var(--gold);">
+                RULES OF AETHERSTONES</div>
+            <div style="font-size:.78rem;line-height:1.8;color:var(--text-hi);">
+                <p><strong style="color:var(--gold);">Goal:</strong> Control more tiles than the Oracle when the board
+                    is full.</p>
+                <p style="margin-top:8px;"><strong style="color:var(--gold);">On your turn:</strong> Pick a tile from
+                    your hand, rotate it (CCW/CW), then click an empty cell to place it.</p>
+                <p style="margin-top:8px;"><strong style="color:var(--gold);">Capture:</strong> When you place a tile
+                    next to an enemy tile, your edge is compared to theirs. If yours is higher (with element modifier),
+                    you take their tile. Your tile stays rotated as placed.</p>
+                <p style="margin-top:8px;"><strong style="color:var(--gold);">Chain Reaction:</strong> Captured tiles
+                    immediately check all THEIR neighbors — captures cascade in a single placement!</p>
+                <p style="margin-top:8px;"><strong style="color:var(--gold);">Element Advantage:</strong> 🔥 beats 🌿,
+                    🌿 beats 🌬️, 🌬️ beats 💧, 💧 beats 🔥. Advantage gives +1 to your edge comparison.</p>
+                <p style="margin-top:8px;"><strong style="color:var(--gold);">Ability:</strong> Each councilor has one
+                    unique power, usable once per battle. Use it wisely.</p>
+            </div>
+            <button class="btn primary" onclick="hideRules()" style="align-self:center;margin-top:8px;">GOT IT</button>
+        </div>
+    </div>
+
+    <script>
+        /* ═══════════════════════════════════════════════════
+           DATA — CHARACTERS
+        ═══════════════════════════════════════════════════ */
+        const CHARS = [
+            {
+                id: 'amicus', name: 'Amicus Amanita', title: 'The Mushroom Wizard',
+                element: 'earth', icon: '🍄', class: 'Wizard', role: 'Summoner',
+                color: 'var(--earth)', unlockLevel: 1,
+                abilityName: 'MYCELIUM SURGE',
+                abilityDesc: 'All your tiles gain +1 to every edge this turn.',
+                abilityMode: 'instant',
+                tileProfile: { min: 3, max: 6, style: 'even' },
+                flavour: 'The network remembers.',
+            },
+            {
+                id: 'nasus', name: 'Nasus Petreus', title: 'The Magician',
+                element: 'earth', icon: '🗿', class: 'Magician', role: 'Defender',
+                color: 'var(--earth)', unlockLevel: 1,
+                abilityName: 'PETRIFY',
+                abilityDesc: 'Click one of your tiles. It becomes immune to capture.',
+                abilityMode: 'target-own',
+                tileProfile: { min: 4, max: 7, style: 'defensive' },
+                flavour: 'Stone does not move. Stone endures.',
+            },
+            {
+                id: 'exstinctor', name: 'Exstinctor Gaudii', title: 'The Fish Enchanter',
+                element: 'water', icon: '🐟', class: 'Enchanter', role: 'Debuffer',
+                color: 'var(--water)', unlockLevel: 2,
+                abilityName: "JOY'S END",
+                abilityDesc: 'All enemy tiles on board lose 1 from their highest edge.',
+                abilityMode: 'instant',
+                tileProfile: { min: 1, max: 7, style: 'high-low' },
+                flavour: 'What floats will be drowned.',
+            },
+            {
+                id: 'pepo', name: 'Pepo Mucida', title: 'The Gourd Mage',
+                element: 'water', icon: '🎃', class: 'Mage', role: 'Healer',
+                color: 'var(--water)', unlockLevel: 3,
+                abilityName: 'FERMENTATION',
+                abilityDesc: 'Your weakest-edge tiles each gain +2 on their lowest edge.',
+                abilityMode: 'instant',
+                tileProfile: { min: 2, max: 6, style: 'adaptive' },
+                flavour: 'Decay feeds what blooms.',
+            },
+            {
+                id: 'flatus', name: 'Flatus in Vitro', title: 'The Wind Wizard',
+                element: 'wind', icon: '🌀', class: 'Wizard', role: 'Controller',
+                color: 'var(--wind)', unlockLevel: 1,
+                abilityName: 'REDIRECT',
+                abilityDesc: 'Click two board tiles to swap their positions.',
+                abilityMode: 'swap',
+                tileProfile: { min: 2, max: 7, style: 'polarized' },
+                flavour: 'Nothing stays where you put it.',
+            },
+            {
+                id: 'vir', name: 'Vir Mirificus', title: 'The Unusual Magician',
+                element: 'wind', icon: '🃏', class: 'Magician', role: 'Trickster',
+                color: 'var(--wind)', unlockLevel: 3,
+                abilityName: 'WILD DRAW',
+                abilityDesc: 'Replace your entire hand with high-value random tiles.',
+                abilityMode: 'instant',
+                tileProfile: { min: 1, max: 7, style: 'chaotic' },
+                flavour: 'Order is a polite fiction.',
+            },
+            {
+                id: 'sitra', name: 'Sitra Ferrea Ambulans', title: 'The Metal Sorcerer',
+                element: 'fire', icon: '⚙️', class: 'Sorcerer', role: 'Blaster',
+                color: 'var(--fire)', unlockLevel: 1,
+                abilityName: 'FORGE BLAST',
+                abilityDesc: 'Your next placed tile captures all adjacent tiles automatically.',
+                abilityMode: 'instant',
+                tileProfile: { min: 1, max: 7, style: 'spike' },
+                flavour: 'The forge has no mercy.',
+            },
+            {
+                id: 'lacerta', name: 'Lacerta Veneficus', title: 'The Reptile Mage',
+                element: 'fire', icon: '🦎', class: 'Mage', role: 'Buffer',
+                color: 'var(--fire)', unlockLevel: 2,
+                abilityName: 'VENOM SURGE',
+                abilityDesc: 'Your tiles adjacent to other friendly tiles get +2 on their attacking edges.',
+                abilityMode: 'instant',
+                tileProfile: { min: 2, max: 6, style: 'cluster' },
+                flavour: 'Cold blood, warm strategy.',
+            },
+        ];
+
+        /* Element advantage wheel */
+        const ELEM_BEATS = { fire: 'earth', earth: 'wind', wind: 'water', water: 'fire' };
+
+        /* AI opponent data */
+        const AI_CHAR = {
+            name: 'Oracle', title: 'The Adversarial Mind',
+            icon: '🤖', element: 'fire',
+            tileProfile: { min: 2, max: 7, style: 'adaptive' }
+        };
+
+        /* ═══════════════════════════════════════════════════
+           PERSISTENCE
+        ═══════════════════════════════════════════════════ */
+        const SAVE_KEY = 'aetherstones_v1';
+        let save = loadSave();
+
+        function defaultSave() {
+            const cd = {};
+            CHARS.forEach(c => { cd[c.id] = { stoneCount: 8, played: 0, won: 0 }; });
+            return { level: 1, xp: 0, xpNext: 100, charData: cd };
+        }
+        function loadSave() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY);
+                if (raw) return JSON.parse(raw);
+            } catch (e) { }
+            return defaultSave();
+        }
+        function persistSave() {
+            try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { }
+        }
+        function addXP(amount) {
+            save.xp += amount;
+            while (save.xp >= save.xpNext) {
+                save.xp -= save.xpNext;
+                save.level++;
+                save.xpNext = Math.floor(save.xpNext * 1.4);
+            }
+            persistSave();
+        }
+
+        /* ═══════════════════════════════════════════════════
+           GAME STATE
+        ═══════════════════════════════════════════════════ */
+        const BS = 4;
+        let gs = {}; // game state
+
+        function freshGameState(char) {
+            return {
+                char,
+                board: Array.from({ length: BS }, () => Array(BS).fill(null)),
+                playerHand: [],
+                aiHand: [],
+                selectedIdx: -1,
+                selRotation: 0,
+                turn: 'player',
+                animating: false,
+                abilityUsed: false,
+                abilityActive: false,    // true while waiting for target
+                abilityTargets: [],      // for swap ability
+                petrified: new Set(),    // "r,c" keys
+                forgeBlastArmed: false,
+                pendingPlacement: null,  // {r, c, tileIdx, rot, timer}
+            };
+        }
+
+        /* ═══════════════════════════════════════════════════
+           TILE GENERATION
+        ═══════════════════════════════════════════════════ */
+        let _tileId = 0;
+        function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+
+        function genTileForProfile(profile, element) {
+            let n, e, s, w;
+            switch (profile.style) {
+                case 'even': n = rnd(3, 6); e = rnd(3, 6); s = rnd(3, 6); w = rnd(3, 6); break;
+                case 'defensive': n = rnd(4, 7); e = rnd(4, 7); s = rnd(4, 7); w = rnd(4, 7); break;
+                case 'high-low': n = rnd(1, 7); e = rnd(1, 7); s = rnd(1, 7); w = rnd(1, 7); break;
+                case 'polarized': { const hi = rnd(5, 7), lo = rnd(1, 3); n = hi; e = lo; s = hi; w = lo; break; }
+                case 'spike': { const dir = rnd(0, 3); const arr = [rnd(1, 3), rnd(1, 3), rnd(1, 3), rnd(1, 3)]; arr[dir] = rnd(6, 7);[n, e, s, w] = arr; break; }
+                case 'adaptive': n = rnd(2, 6); e = rnd(2, 6); s = rnd(2, 6); w = rnd(2, 6); break;
+                case 'chaotic': n = rnd(1, 7); e = rnd(1, 7); s = rnd(1, 7); w = rnd(1, 7); break;
+                case 'cluster': n = rnd(2, 6); e = rnd(2, 6); s = rnd(2, 6); w = rnd(2, 6); break;
+                default: n = rnd(1, 7); e = rnd(1, 7); s = rnd(1, 7); w = rnd(1, 7);
+            }
+            return { id: ++_tileId, element, n, e, s, w };
+        }
+
+        function rotateCW(t) { return { ...t, n: t.w, e: t.n, s: t.e, w: t.s }; }
+        function rotateTile(t, times) {
+            let r = { ...t };
+            const m = ((times % 4) + 4) % 4;
+            for (let i = 0; i < m; i++) r = rotateCW(r);
+            return r;
+        }
+
+        function dealHand(profile, element, count = 5) {
+            return Array.from({ length: count }, () => genTileForProfile(profile, element));
+        }
+
+        /* ═══════════════════════════════════════════════════
+           CAPTURE LOGIC
+        ═══════════════════════════════════════════════════ */
+        const ADJ = [
+            { dr: -1, dc: 0, mine: 'n', theirs: 's' },
+            { dr: 1, dc: 0, mine: 's', theirs: 'n' },
+            { dr: 0, dc: -1, mine: 'w', theirs: 'e' },
+            { dr: 0, dc: 1, mine: 'e', theirs: 'w' },
+        ];
+
+        function elemBonus(attacker, defender) {
+            if (ELEM_BEATS[attacker] === defender) return 1;
+            if (ELEM_BEATS[defender] === attacker) return -1;
+            return 0;
+        }
+
+        function captureFrom(r, c, board, petrified, forceCapture = false) {
+            const placed = board[r][c];
+            const captured = [];
+            const visited = new Set([`${r},${c}`]);
+            const queue = [{ r, c, tile: placed }];
+
+            while (queue.length) {
+                const { r: cr, c: cc, tile: ct } = queue.shift();
+                ADJ.forEach(({ dr, dc, mine, theirs }) => {
+                    const nr = cr + dr, nc = cc + dc;
+                    if (nr < 0 || nr >= BS || nc < 0 || nc >= BS) return;
+                    const nb = board[nr][nc];
+                    if (!nb || nb.owner === ct.owner) return;
+                    if (petrified.has(`${nr},${nc}`)) return;
+                    const key = `${nr},${nc}`;
+                    if (visited.has(key)) return;
+
+                    const myVal = ct[mine] + (forceCapture ? 100 : elemBonus(ct.element, nb.element));
+                    const theirVal = nb[theirs];
+                    if (forceCapture || myVal > theirVal) {
+                        visited.add(key);
+                        const flipped = { ...nb, owner: ct.owner };
+                        board[nr][nc] = flipped;
+                        captured.push({ r: nr, c: nc });
+                        queue.push({ r: nr, c: nc, tile: flipped });
+                    }
+                });
+            }
+            return captured;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           GAME INIT
+        ═══════════════════════════════════════════════════ */
+        let selectedChar = null;
+
+        function startGame() {
+            if (!selectedChar) return;
+            gs = freshGameState(selectedChar);
+            gs.playerHand = dealHand(selectedChar.tileProfile, selectedChar.element);
+            gs.aiHand = dealHand(AI_CHAR.tileProfile, AI_CHAR.element);
+            showScreen('screen-game');
+            buildGameUI();
+            renderAll();
+            setStatus('Pick a tile, rotate it, then place it on the board.');
+        }
+
+        function buildGameUI() {
+            const c = gs.char;
+            // Strip
+            const sp = document.getElementById('strip-portrait');
+            sp.textContent = c.icon;
+            sp.style.background = `radial-gradient(circle, ${c.color}22, #00000088)`;
+            sp.style.borderColor = c.color;
+            document.getElementById('strip-name').textContent = c.name;
+            document.getElementById('strip-title').textContent = c.title;
+
+            // Ability button
+            const ab = document.getElementById('ability-btn');
+            ab.className = `ability-btn ${c.element}`;
+            document.getElementById('ab-name').textContent = c.abilityName;
+            document.getElementById('ab-desc').textContent = c.abilityDesc;
+
+            // AI panel
+            document.getElementById('ai-portrait').textContent = AI_CHAR.icon;
+            const aec = document.getElementById('ai-element-chip');
+            aec.innerHTML = `<span class="chip ${AI_CHAR.element}">${{ fire: '🔥', earth: '🌿', wind: '🌬️', water: '💧' }[AI_CHAR.element]} ${AI_CHAR.element.toUpperCase()}</span>`;
+            document.getElementById('ai-stones-label').textContent = `Stones: ${save.charData[c.id]?.stoneCount || 8}`;
+        }
+
+        function replayGame() {
+            document.getElementById('overlay-gameover').classList.remove('show');
+            startGame();
+        }
+
+        /* ═══════════════════════════════════════════════════
+           RENDERING
+        ═══════════════════════════════════════════════════ */
+        function renderAll() {
+            renderBoard();
+            renderHand();
+            updateScores();
+            updateTurnUI();
+            updateAbilityBtn();
+        }
+
+        function renderBoard() {
+            const el = document.getElementById('board');
+            el.innerHTML = '';
+            for (let r = 0; r < BS; r++) {
+                for (let c = 0; c < BS; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.r = r; cell.dataset.c = c;
+                    const t = gs.board[r][c];
+
+                    if (t) {
+                        cell.appendChild(makePlacedTile(t, r, c));
+                    } else {
+                        const emp = document.createElement('div');
+                        emp.className = 'tile-empty tile-shape';
+                        cell.appendChild(emp);
+                        // Placeable during normal mode
+                        if (gs.turn === 'player' && !gs.animating && !gs.abilityActive && !gs.pendingPlacement) {
+                            cell.classList.add('placeable');
+                            // Allow click as fallback? Or maybe just drag drop. Let's keep click if selected.
+                            cell.addEventListener('click', () => onCellClick(r, c));
+
+                            // Drag and Drop
+                            cell.addEventListener('dragover', (e) => {
+                                e.preventDefault();
+                                cell.classList.add('drag-over');
+                            });
+                            cell.addEventListener('dragleave', () => cell.classList.remove('drag-over'));
+                            cell.addEventListener('drop', (e) => handleTileDrop(e, r, c));
+                        }
+                    }
+
+                    // Ability target modes
+                    if (gs.abilityActive) {
+                        const char = gs.char;
+                        if (char.abilityMode === 'target-own' && t && t.owner === 'player') {
+                            cell.classList.add('ability-selectable');
+                            cell.addEventListener('click', () => abilityTargetOwn(r, c));
+                        }
+                        if (char.abilityMode === 'swap' && t) {
+                            cell.classList.add('ability-selectable');
+                            cell.addEventListener('click', () => abilityTargetSwap(r, c));
+                        }
+                    }
+
+                    el.appendChild(cell);
+                }
+            }
+
+            // Render pending floating tile if exists
+            if (gs.pendingPlacement) {
+                const { r, c, tileIdx, rot } = gs.pendingPlacement;
+                const cell = el.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+                if (cell) {
+                    // Remove empty tile visual
+                    cell.innerHTML = '';
+
+                    const base = gs.playerHand[tileIdx];
+                    const t = { ...rotateTile(base, rot), owner: 'player', id: base.id };
+                    const tileEl = makePlacedTile(t, r, c);
+                    tileEl.classList.add('tile-floating');
+                    // Click to rotate pending
+                    tileEl.addEventListener('click', () => rotatePending());
+
+                    cell.appendChild(tileEl);
+                }
+            }
+        }
+
+        function makePlacedTile(t, r, c) {
+            const wrap = document.createElement('div');
+            wrap.className = 'tile-placed';
+            wrap.id = `tile-${t.id}`;
+
+            const inner = document.createElement('div');
+            const isPlayer = t.owner === 'player';
+            const petr = gs.petrified.has(`${r},${c}`);
+            inner.className = `tile-inner ${isPlayer ? 'pt' : 'at'} elem-${t.element}${petr ? ' petrified' : ''}`;
+
+            // Swap targets highlight
+            if (gs.abilityActive && gs.abilityTargets.includes(`${r},${c}`)) {
+                inner.style.outline = '3px solid #ff00ff';
+            }
+
+            ['n', 'e', 's', 'w'].forEach(d => {
+                const sp = document.createElement('span');
+                sp.className = `ev ev-${d}`;
+                sp.textContent = t[d];
+                inner.appendChild(sp);
+            });
+
+            const dot = document.createElement('div');
+            dot.className = 'tile-center';
+            inner.appendChild(dot);
+            wrap.appendChild(inner);
+            return wrap;
+        }
+
+        function renderHand() {
+            const grid = document.getElementById('hand-grid');
+            grid.innerHTML = '';
+            gs.playerHand.forEach((t, i) => {
+                const slot = document.createElement('div');
+                slot.className = 'hand-slot';
+
+                const wrap = document.createElement('div');
+                wrap.className = 'hand-tile-wrap' + (i === gs.selectedIdx ? ' selected' : '');
+
+                // Hide if pending placement
+                if (gs.pendingPlacement && gs.pendingPlacement.tileIdx === i) {
+                    wrap.style.opacity = '0';
+                    wrap.style.pointerEvents = 'none';
+                }
+
+                // Show rotated display
+                const display = i === gs.selectedIdx ? rotateTile(t, gs.selRotation) : t;
+                const tileEl = makePlacedTile({ ...display, owner: 'player', id: t.id }, -1, -1);
+
+                // Draggable
+                if (gs.turn === 'player' && !gs.animating && !gs.abilityActive && !gs.pendingPlacement) {
+                    tileEl.draggable = true;
+                    tileEl.addEventListener('dragstart', (e) => {
+                        gs.selectedIdx = i; // Select on drag
+                        gs.selRotation = 0; // Reset rotation on new pick
+                        e.dataTransfer.setData('text/plain', JSON.stringify({ index: i, rot: 0 }));
+                        e.dataTransfer.effectAllowed = 'move';
+                        // Visual feedback
+                        setTimeout(() => wrap.style.opacity = '0.5', 0);
+                        renderHand(); renderBoard(); // Highlight drop zones
+                    });
+                    tileEl.addEventListener('dragend', () => {
+                        wrap.style.opacity = '1';
+                    });
+                }
+
+                wrap.appendChild(tileEl);
+                wrap.addEventListener('click', () => selectTile(i));
+
+                const lbl = document.createElement('div');
+                lbl.className = 'hand-slot-num';
+                lbl.textContent = i === gs.selectedIdx ? `ROT×${gs.selRotation}` : `T-${i + 1}`;
+
+                slot.appendChild(wrap);
+                slot.appendChild(lbl);
+                grid.appendChild(slot);
+            });
+        }
+
+        function updateScores() {
+            let p = 0, a = 0;
+            for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
+                if (gs.board[r][c]) { gs.board[r][c].owner === 'player' ? p++ : a++; }
+            }
+            document.getElementById('score-player').textContent = p;
+            document.getElementById('score-ai').textContent = a;
+        }
+
+        function updateTurnUI() {
+            const pill = document.getElementById('turn-pill');
+            const who = document.getElementById('turn-who');
+            if (gs.turn === 'player') {
+                pill.className = 'turn-pill player-turn'; who.textContent = 'SEEKER';
+            } else {
+                pill.className = 'turn-pill ai-turn'; who.textContent = 'ORACLE';
+            }
+        }
+
+        function updateAbilityBtn() {
+            const btn = document.getElementById('ability-btn');
+            btn.disabled = gs.abilityUsed || gs.turn !== 'player' || gs.animating;
+            if (gs.abilityActive) btn.classList.add('ability-active');
+            else btn.classList.remove('ability-active');
+        }
+
+        function setStatus(msg, cls = '') {
+            const el = document.getElementById('status-bar');
+            el.className = 'status-bar' + (cls ? ' ' + cls : '');
+            el.innerHTML = msg;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           PLAYER ACTIONS
+        ═══════════════════════════════════════════════════ */
+        function selectTile(i) {
+            if (gs.turn !== 'player' || gs.animating || gs.abilityActive) return;
+            if (gs.selectedIdx === i) { gs.selectedIdx = -1; gs.selRotation = 0; }
+            else { gs.selectedIdx = i; gs.selRotation = 0; }
+            renderBoard(); renderHand(); updateAbilityBtn();
+            if (gs.selectedIdx >= 0) setStatus(`Tile ${i + 1} selected (${gs.char.element}). Rotate then click the board.`);
+            else setStatus('Choose a tile from your hand.');
+        }
+
+        function rotateSelected(dir) {
+            if (gs.turn !== 'player' || gs.animating) return;
+
+            if (gs.pendingPlacement) {
+                gs.pendingPlacement.rot = ((gs.pendingPlacement.rot + dir) % 4 + 4) % 4;
+                clearTimeout(gs.pendingPlacement.timer);
+                gs.pendingPlacement.timer = setTimeout(() => commitPlacement(), 2000);
+                renderBoard();
+                return;
+            }
+
+            if (gs.selectedIdx < 0) return;
+            gs.selRotation = ((gs.selRotation + dir) % 4 + 4) % 4;
+            renderHand();
+        }
+
+        function onCellClick(r, c) {
+            if (gs.turn !== 'player' || gs.animating || gs.selectedIdx < 0) return;
+            if (gs.board[r][c]) return;
+
+            // Use the same pending flow as drag-drop for consistency
+            startPendingPlacement(r, c, gs.selectedIdx, gs.selRotation);
+        }
+
+        function handleTileDrop(e, r, c) {
+            e.preventDefault();
+            const data = e.dataTransfer.getData('text/plain');
+            if (!data) return;
+            const { index, rot } = JSON.parse(data);
+
+            // Start pending placement
+            startPendingPlacement(r, c, index, rot || 0);
+        }
+
+        function startPendingPlacement(r, c, index, rot) {
+            if (gs.pendingPlacement) clearTimeout(gs.pendingPlacement.timer);
+
+            gs.selectedIdx = -1; // Deselect hand highight
+            gs.pendingPlacement = {
+                r, c, tileIdx: index, rot,
+                timer: setTimeout(() => commitPlacement(), 2500) // 1.5s wait + buffer
+            };
+
+            renderAll();
+            setStatus('Tile floating! Rotate to adjust, or wait for it to sink...');
+        }
+
+        function rotatePending() {
+            if (!gs.pendingPlacement) return;
+            gs.pendingPlacement.rot = (gs.pendingPlacement.rot + 1) % 4;
+
+            // Reset timer on interaction? 
+            // User req: "wait a little bit... allow rotation... then after 1-2s sink"
+            // Let's reset timer to give them time if they are actively rotating
+            clearTimeout(gs.pendingPlacement.timer);
+            gs.pendingPlacement.timer = setTimeout(() => commitPlacement(), 2000);
+
+            renderBoard();
+        }
+
+        function commitPlacement() {
+            if (!gs.pendingPlacement) return;
+            const { r, c, tileIdx, rot } = gs.pendingPlacement;
+
+            // Animate sink
+            const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"] .tile-placed`);
+            if (cell) {
+                cell.classList.remove('tile-floating');
+                cell.classList.add('tile-sinking');
+            }
+
+            setTimeout(() => {
+                gs.pendingPlacement = null;
+                const base = gs.playerHand[tileIdx];
+                const tile = { ...rotateTile(base, rot), owner: 'player' };
+
+                // Proceed with logic
+                placeAndCapture(r, c, tile, gs.forgeBlastArmed, () => {
+                    gs.forgeBlastArmed = false;
+                    gs.playerHand.splice(tileIdx, 1);
+                    gs.playerHand.push(genTileForProfile(gs.char.tileProfile, gs.char.element));
+                    updateScores();
+                    if (checkGameOver()) return;
+                    gs.turn = 'ai';
+                    updateTurnUI();
+                    setStatus('<span class="thinking">Oracle is calculating…</span>');
+                    setTimeout(doAI, 900);
+                });
+            }, 500); // Wait for sink animation
+        }
+
+        /* ═══════════════════════════════════════════════════
+           PLACE + CAPTURE
+        ═══════════════════════════════════════════════════ */
+        function placeAndCapture(r, c, tile, force, callback) {
+            gs.animating = true;
+            gs.board[r][c] = tile;
+            renderAll();
+
+            const captured = captureFrom(r, c, gs.board, gs.petrified, force);
+
+            const delay = captured.length > 0 ? 150 * Math.min(captured.length, 5) + 250 : 200;
+
+            if (captured.length > 0) {
+                captured.forEach(({ r: cr, c: cc }, idx) => {
+                    setTimeout(() => {
+                        const tid = gs.board[cr][cc]?.id;
+                        const el = document.getElementById(`tile-${tid}`);
+                        if (el) {
+                            const inner = el.querySelector('.tile-inner');
+                            if (inner) inner.classList.add('capturing');
+                        }
+                    }, idx * 140);
+                });
+                setTimeout(() => {
+                    renderAll();
+                    gs.animating = false;
+                    if (callback) callback();
+                }, delay);
+            } else {
+                setTimeout(() => {
+                    renderAll();
+                    gs.animating = false;
+                    if (callback) callback();
+                }, 200);
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════
+           ABILITIES
+        ═══════════════════════════════════════════════════ */
+        function activateAbility() {
+            if (gs.abilityUsed || gs.turn !== 'player' || gs.animating) return;
+            const char = gs.char;
+
+            if (char.abilityMode === 'instant') {
+                applyInstantAbility(char.id);
+                gs.abilityUsed = true;
+                updateAbilityBtn();
+                return;
+            }
+
+            // Enter targeting mode
+            gs.abilityActive = true;
+            gs.abilityTargets = [];
+            if (char.abilityMode === 'target-own') {
+                setStatus(`⬡ PETRIFY — Click one of your tiles to make it immune.`);
+            }
+            if (char.abilityMode === 'swap') {
+                setStatus(`🌀 REDIRECT — Click two tiles on the board to swap them.`);
+            }
+            renderBoard(); updateAbilityBtn();
+        }
+
+        function applyInstantAbility(id) {
+            switch (id) {
+                case 'amicus': {
+                    // All player tiles +1 all edges
+                    for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
+                        const t = gs.board[r][c];
+                        if (t && t.owner === 'player') {
+                            t.n = Math.min(7, t.n + 1); t.e = Math.min(7, t.e + 1);
+                            t.s = Math.min(7, t.s + 1); t.w = Math.min(7, t.w + 1);
+                        }
+                    }
+                    setStatus('🍄 Mycelium Surge — all your tiles boosted +1!');
+                    break;
+                }
+                case 'exstinctor': {
+                    // Enemy tiles lose 1 from highest edge
+                    for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
+                        const t = gs.board[r][c];
+                        if (t && t.owner === 'ai') {
+                            const dirs = ['n', 'e', 's', 'w'];
+                            const maxDir = dirs.reduce((a, b) => t[a] >= t[b] ? a : b);
+                            t[maxDir] = Math.max(1, t[maxDir] - 1);
+                        }
+                    }
+                    setStatus("🐟 Joy's End — enemy morale sapped!");
+                    break;
+                }
+                case 'pepo': {
+                    // Weakest-edge tiles get +2 on their lowest edge
+                    for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
+                        const t = gs.board[r][c];
+                        if (t && t.owner === 'player') {
+                            const dirs = ['n', 'e', 's', 'w'];
+                            const minDir = dirs.reduce((a, b) => t[a] <= t[b] ? a : b);
+                            if (t[minDir] <= 3) t[minDir] = Math.min(7, t[minDir] + 2);
+                        }
+                    }
+                    // Also boost hand
+                    gs.playerHand.forEach(t => {
+                        const dirs = ['n', 'e', 's', 'w'];
+                        const minDir = dirs.reduce((a, b) => t[a] <= t[b] ? a : b);
+                        t[minDir] = Math.min(7, t[minDir] + 2);
+                    });
+                    setStatus('🎃 Fermentation — weak edges fermented into strength!');
+                    break;
+                }
+                case 'vir': {
+                    // Replace hand with 5 high-value tiles
+                    gs.playerHand = Array.from({ length: 5 }, () => {
+                        const t = genTileForProfile({ min: 5, max: 7, style: 'even' }, gs.char.element);
+                        return t;
+                    });
+                    gs.selectedIdx = -1; gs.selRotation = 0;
+                    setStatus('🃏 Wild Draw — chaos delivers power!');
+                    break;
+                }
+                case 'sitra': {
+                    gs.forgeBlastArmed = true;
+                    setStatus('⚙️ Forge Blast ARMED — next tile captures ALL adjacent tiles!');
+                    break;
+                }
+                case 'lacerta': {
+                    // Adjacent friendly clusters get +2 to attacking edges
+                    const boosted = new Set();
+                    for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
+                        const t = gs.board[r][c];
+                        if (!t || t.owner !== 'player') continue;
+                        let hasFriendly = false;
+                        ADJ.forEach(({ dr, dc }) => {
+                            const nr = r + dr, nc = c + dc;
+                            if (nr >= 0 && nr < BS && nc >= 0 && nc < BS && gs.board[nr][nc]?.owner === 'player') hasFriendly = true;
+                        });
+                        if (hasFriendly && !boosted.has(`${r},${c}`)) {
+                            boosted.add(`${r},${c}`);
+                            const dirs = ['n', 'e', 's', 'w'];
+                            const maxDir = dirs.reduce((a, b) => t[a] >= t[b] ? a : b);
+                            t[maxDir] = Math.min(7, t[maxDir] + 2);
+                        }
+                    }
+                    setStatus('🦎 Venom Surge — clustered tiles empowered!');
+                    break;
+                }
+            }
+            renderAll();
+        }
+
+        function abilityTargetOwn(r, c) {
+            // Petrify
+            gs.petrified.add(`${r},${c}`);
+            gs.abilityActive = false;
+            gs.abilityUsed = true;
+            setStatus('🗿 Petrified — this tile cannot be captured!');
+            renderBoard(); updateAbilityBtn();
+        }
+
+        function abilityTargetSwap(r, c) {
+            const key = `${r},${c}`;
+            if (gs.abilityTargets.includes(key)) {
+                gs.abilityTargets = gs.abilityTargets.filter(k => k !== key);
+            } else {
+                gs.abilityTargets.push(key);
+            }
+
+            if (gs.abilityTargets.length === 2) {
+                const [k1, k2] = gs.abilityTargets;
+                const [r1, c1] = k1.split(',').map(Number);
+                const [r2, c2] = k2.split(',').map(Number);
+                const tmp = gs.board[r1][c1];
+                gs.board[r1][c1] = gs.board[r2][c2];
+                gs.board[r2][c2] = tmp;
+                gs.abilityTargets = [];
+                gs.abilityActive = false;
+                gs.abilityUsed = true;
+                setStatus('🌀 Redirect — tiles repositioned!');
+                renderAll(); updateAbilityBtn();
+            } else {
+                setStatus('🌀 Redirect — now click the second tile.');
+                renderBoard();
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════
+           AI
+        ═══════════════════════════════════════════════════ */
+        function doAI() {
+            if (gs.turn !== 'ai') return;
+
+            let best = -Infinity, bestMove = null;
+
+            gs.aiHand.forEach((tile, ti) => {
+                for (let rot = 0; rot < 4; rot++) {
+                    const rt = rotateTile(tile, rot);
+                    for (let r = 0; r < BS; r++) {
+                        for (let c = 0; c < BS; c++) {
+                            if (gs.board[r][c]) continue;
+                            const score = scoreAIMove(r, c, rt);
+                            if (score > best) { best = score; bestMove = { ti, rot, r, c }; }
+                        }
+                    }
+                }
+            });
+
+            if (!bestMove) { endGame(); return; }
+
+            const tile = { ...rotateTile(gs.aiHand[bestMove.ti], bestMove.rot), owner: 'ai' };
+            placeAndCapture(bestMove.r, bestMove.c, tile, false, () => {
+                gs.aiHand.splice(bestMove.ti, 1);
+                gs.aiHand.push(genTileForProfile(AI_CHAR.tileProfile, AI_CHAR.element));
+                updateScores();
+                if (checkGameOver()) return;
+                gs.turn = 'player';
+                updateTurnUI(); renderAll();
+                setStatus('Your turn — select, rotate, and place.');
+            });
+        }
+
+        function scoreAIMove(r, c, tile) {
+            let score = 0;
+            ADJ.forEach(({ dr, dc, mine, theirs }) => {
+                const nr = r + dr, nc = c + dc;
+                if (nr < 0 || nr >= BS || nc < 0 || nc >= BS) return;
+                const nb = gs.board[nr][nc];
+                if (!nb) return;
+                const bonus = elemBonus(tile.element, nb.element);
+                if (nb.owner === 'player') {
+                    if (tile[mine] + bonus > nb[theirs]) score += 2;
+                    else score -= 1;
+                } else {
+                    score += 0.3; // defensive bonus for adjacency to own tiles
+                }
+            });
+            return score + (Math.random() * .3 - .15);
+        }
+
+        /* ═══════════════════════════════════════════════════
+           GAME OVER
+        ═══════════════════════════════════════════════════ */
+        function checkGameOver() {
+            for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) if (!gs.board[r][c]) return false;
+            setTimeout(endGame, 350);
+            return true;
+        }
+
+        function endGame() {
+            let p = 0, a = 0;
+            for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
+                if (gs.board[r][c]) { gs.board[r][c].owner === 'player' ? p++ : a++; }
+            }
+
+            const win = p > a, draw = p === a;
+            const cid = gs.char.id;
+            save.charData[cid].played++;
+            if (win) save.charData[cid].won++;
+
+            const xpGain = win ? 80 : draw ? 40 : 25;
+            const oldLevel = save.level;
+            addXP(xpGain);
+            const leveledUp = save.level > oldLevel;
+
+            // Award a new stone
+            let newStone = null;
+            if (win || Math.random() < .4) {
+                save.charData[cid].stoneCount++;
+                persistSave();
+                newStone = genTileForProfile(gs.char.tileProfile, gs.char.element);
+            }
+
+            // Show results
+            const title = document.getElementById('res-title');
+            const score = document.getElementById('res-score');
+            const flavour = document.getElementById('res-flavour');
+            const xpEl = document.getElementById('res-xp');
+            const stoneEl = document.getElementById('res-stone');
+
+            if (win) {
+                title.textContent = 'VICTORY'; title.style.color = 'var(--player)';
+                flavour.textContent = gs.char.flavour;
+            } else if (draw) {
+                title.textContent = 'DRAW'; title.style.color = 'var(--gold)';
+                flavour.textContent = 'The stones speak in riddles.';
+            } else {
+                title.textContent = 'DEFEATED'; title.style.color = 'var(--ai)';
+                flavour.textContent = 'The Oracle sees further than you today.';
+            }
+
+            score.textContent = `SEEKER ${p}  ·  ORACLE ${a}`;
+            xpEl.textContent = `+ ${xpGain} XP${leveledUp ? '  ·  LEVEL UP → ' + save.level : ''}`;
+
+            if (newStone) {
+                stoneEl.style.display = 'block';
+                stoneEl.innerHTML = `<strong>NEW STONE ADDED</strong><br>${gs.char.name} now holds ${save.charData[cid].stoneCount} stones.<br><small style="color:var(--text);">${newStone.element} ${newStone.n}/${newStone.e}/${newStone.s}/${newStone.w}</small>`;
+            } else {
+                stoneEl.style.display = 'none';
+            }
+
+            document.getElementById('overlay-gameover').classList.add('show');
+        }
+
+        /* ═══════════════════════════════════════════════════
+           SCREEN NAVIGATION
+        ═══════════════════════════════════════════════════ */
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function showMenu() {
+            document.getElementById('overlay-gameover').classList.remove('show');
+            document.getElementById('overlay-rules').classList.remove('show');
+            updateMenuUI();
+            showScreen('screen-menu');
+        }
+
+        function updateMenuUI() {
+            document.getElementById('menu-level').textContent = save.level;
+            document.getElementById('menu-xp-label').textContent = `${save.xp} / ${save.xpNext} XP`;
+            const pct = Math.min(100, (save.xp / save.xpNext) * 100);
+            document.getElementById('menu-xp-fill').style.width = pct + '%';
+        }
+
+        function showCharSelect() {
+            document.getElementById('overlay-gameover').classList.remove('show');
+            selectedChar = null;
+            buildCharGrid();
+            document.getElementById('charselect-confirm').style.display = 'none';
+            showScreen('screen-charselect');
+        }
+
+        function buildCharGrid() {
+            const grid = document.getElementById('char-grid');
+            grid.innerHTML = '';
+            CHARS.forEach(c => {
+                const locked = save.level < c.unlockLevel;
+                const card = document.createElement('div');
+                card.className = `char-card ${c.element}${locked ? ' locked' : ''}`;
+                card.innerHTML = `
+      <div class="char-portrait">${c.icon}</div>
+      <div class="char-name">${c.name}</div>
+      <div class="char-title">${c.title}</div>
+      <div class="char-chips">
+        <span class="chip ${c.element}">${{ earth: '🌿', water: '💧', wind: '🌬️', fire: '🔥' }[c.element]} ${c.element.toUpperCase()}</span>
+        <span class="chip neutral">${c.class}</span>
+        <span class="chip neutral">${c.role}</span>
+      </div>
+      <div class="char-ability-box"><strong>${c.abilityName}</strong><br>${c.abilityDesc}</div>
+      <div class="char-stones">⬡ ${save.charData[c.id]?.stoneCount || 8} STONES</div>
+      ${locked ? `<div class="lock-overlay"><div class="lock-icon">🔒</div><div>LEVEL ${c.unlockLevel} REQUIRED</div></div>` : ''}
+    `;
+                if (!locked) card.addEventListener('click', () => selectCharCard(c.id));
+                grid.appendChild(card);
+            });
+        }
+
+        function selectCharCard(id) {
+            selectedChar = CHARS.find(c => c.id === id);
+            document.querySelectorAll('.char-card').forEach(el => el.classList.remove('selected'));
+            const cards = document.querySelectorAll('.char-card');
+            CHARS.forEach((c, i) => { if (c.id === id) cards[i].classList.add('selected'); });
+
+            // Show confirm panel
+            document.getElementById('confirm-name').textContent = selectedChar.name + ' — ' + selectedChar.title;
+            document.getElementById('confirm-chips').innerHTML = `
+    <span class="chip ${selectedChar.element}">${{ earth: '🌿', water: '💧', wind: '🌬️', fire: '🔥' }[selectedChar.element]} ${selectedChar.element.toUpperCase()}</span>
+    <span class="chip neutral">${selectedChar.class}</span>
+    <span class="chip neutral">${selectedChar.role}</span>
+    <span class="chip neutral">⬡ ${save.charData[selectedChar.id]?.stoneCount || 8} stones</span>
+  `;
+            document.getElementById('confirm-ability').innerHTML = `<strong style="color:var(--gold);">${selectedChar.abilityName}:</strong> ${selectedChar.abilityDesc}`;
+            document.getElementById('charselect-confirm').style.display = 'flex';
+        }
+
+        function cancelSelect() {
+            selectedChar = null;
+            document.querySelectorAll('.char-card').forEach(el => el.classList.remove('selected'));
+            document.getElementById('charselect-confirm').style.display = 'none';
+        }
+
+        function showRules() {
+            document.getElementById('overlay-rules').classList.add('show');
+        }
+        function hideRules() {
+            document.getElementById('overlay-rules').classList.remove('show');
+        }
+
+        /* ═══════════════════════════════════════════════════
+           INIT
+        ═══════════════════════════════════════════════════ */
+        updateMenuUI();
+        showScreen('screen-menu');
+    </script>
+</body>
+
+</html>
