@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherStones — Council of Green Point</title>
+    <title>Skystones — Portal of Power</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
@@ -29,6 +29,8 @@
             --wind-d: #0a2a2a;
             --fire: #ff6535;
             --fire-d: #3a1008;
+            --magic: #8b6dff;
+            --magic-d: #2a0a4a;
 
             /* Player / AI */
             --player: #00e5ff;
@@ -197,6 +199,12 @@
             background: var(--fire-d);
         }
 
+        .chip.magic {
+            color: var(--magic);
+            border-color: var(--magic);
+            background: var(--magic-d);
+        }
+
         .chip.neutral {
             color: var(--text);
             border-color: var(--border);
@@ -354,6 +362,10 @@
             background: radial-gradient(ellipse at center, var(--fire-d) 0%, transparent 70%);
         }
 
+        .char-card.magic::before {
+            background: radial-gradient(ellipse at center, var(--magic-d) 0%, transparent 70%);
+        }
+
         .char-card:hover:not(.locked)::before {
             opacity: 1;
         }
@@ -382,6 +394,11 @@
             box-shadow: 0 0 20px var(--fire-d);
         }
 
+        .char-card.magic:hover:not(.locked) {
+            border-color: var(--magic);
+            box-shadow: 0 0 20px var(--magic-d);
+        }
+
         .char-card.selected.earth {
             border-color: var(--earth) !important;
             box-shadow: 0 0 25px #5fba6f88 !important;
@@ -400,6 +417,11 @@
         .char-card.selected.fire {
             border-color: var(--fire) !important;
             box-shadow: 0 0 25px #ff653588 !important;
+        }
+
+        .char-card.selected.magic {
+            border-color: var(--magic) !important;
+            box-shadow: 0 0 25px #8b6dff88 !important;
         }
 
         .char-card.locked {
@@ -491,6 +513,15 @@
 
         .fire .char-portrait::after {
             border-color: var(--fire);
+        }
+
+        .magic .char-portrait {
+            background: radial-gradient(circle, #2a0a4a, #1a0530);
+            border-color: var(--magic);
+        }
+
+        .magic .char-portrait::after {
+            border-color: var(--magic);
         }
 
         .char-name {
@@ -874,6 +905,12 @@
             color: var(--fire);
         }
 
+        .ability-btn.magic {
+            background: var(--magic-d);
+            border-color: var(--magic);
+            color: var(--magic);
+        }
+
         .ability-btn:hover:not(:disabled):not(.ability-active) {
             filter: brightness(1.3);
             transform: scale(1.02);
@@ -906,9 +943,9 @@
 
         .board {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 7px;
-            padding: 18px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 24px;
             background: var(--surf1);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -917,8 +954,8 @@
 
         /* CELL */
         .cell {
-            width: 86px;
-            height: 86px;
+            width: 90px;
+            height: 90px;
             position: relative;
             cursor: default;
             transition: transform .15s;
@@ -1029,6 +1066,10 @@
 
         .tile-inner.elem-fire {
             border-color: var(--fire) !important;
+        }
+
+        .tile-inner.elem-magic {
+            border-color: var(--magic) !important;
         }
 
         /* Edge values */
@@ -1359,11 +1400,11 @@
 ════════════════════════════════════════════ -->
     <div id="screen-menu" class="screen z1">
         <div class="deco-bar" style="max-width:700px;width:100%;margin-bottom:8px;"></div>
-        <div class="menu-title title-text">AETHERSTONES</div>
-        <div class="menu-subtitle">Council of Green Point</div>
+        <div class="menu-title title-text">SKYSTONES</div>
+        <div class="menu-subtitle">Portal of Power Edition</div>
 
         <div class="level-display">
-            <div class="menu-subtitle" style="font-size:.5rem;">SEEKER RANK</div>
+            <div class="menu-subtitle" style="font-size:.5rem;">PORTAL MASTER RANK</div>
             <div class="level-num" id="menu-level">1</div>
             <div class="xp-bar-wrap">
                 <div class="xp-label" id="menu-xp-label">0 / 100 XP</div>
@@ -1374,13 +1415,13 @@
         </div>
 
         <div class="menu-tagline">
-            Eight councilors. Four elements. One chaotic board.<br>
-            Rotate your stones, deploy your art, shatter the Oracle.
+            Iconic Skylanders. Authentic Blade Logic. 3x3 Board.<br>
+            Rotate your stones, use your abilities, and capture the board.
         </div>
 
         <div class="menu-buttons">
-            <button class="btn primary" style="font-size:.7rem;padding:12px 32px;" onclick="showCharSelect()">▶ ENTER
-                THE COUNCIL</button>
+            <button class="btn primary" style="font-size:.7rem;padding:12px 32px;" onclick="showCharSelect()">▶ PLAY
+                SKYSTONES</button>
             <button class="btn" onclick="showRules()">? RULES</button>
         </div>
         <div class="deco-bar" style="max-width:700px;width:100%;margin-top:8px;"></div>
@@ -1391,8 +1432,8 @@
 ════════════════════════════════════════════ -->
     <div id="screen-charselect" class="screen z1">
         <div class="charselect-header">
-            <div class="charselect-title title-text">CHOOSE YOUR COUNCILOR</div>
-            <div class="menu-subtitle" style="margin-top:4px;">Each wields a different art. Each holds a different key.
+            <div class="charselect-title title-text">CHOOSE YOUR SKYLANDER</div>
+            <div class="menu-subtitle" style="margin-top:4px;">Each stone has unique blades and a powerful ability.
             </div>
         </div>
 
@@ -1405,7 +1446,7 @@
                 <div style="font-size:.72rem;color:var(--text);margin-top:4px;" id="confirm-ability"></div>
             </div>
             <div class="confirm-btns">
-                <button class="btn gold" style="font-size:.7rem;" onclick="startGame()">⚔ ENTER BATTLE</button>
+                <button class="btn gold" style="font-size:.7rem;" onclick="startGame()">⚔ START BATTLE</button>
                 <button class="btn" onclick="cancelSelect()">✕</button>
             </div>
         </div>
@@ -1426,7 +1467,7 @@
             </div>
             <div class="strip-scores">
                 <div class="strip-score-item">
-                    <div class="strip-score-label">SEEKER</div>
+                    <div class="strip-score-label">PLAYER</div>
                     <div class="strip-score-num player-col" id="score-player">0</div>
                 </div>
                 <div class="strip-score-item">
@@ -1434,25 +1475,25 @@
                     <div class="strip-score-num" style="color:var(--text);font-size:1rem;">·</div>
                 </div>
                 <div class="strip-score-item">
-                    <div class="strip-score-label">ORACLE</div>
+                    <div class="strip-score-label">CPU</div>
                     <div class="strip-score-num ai-col" id="score-ai">0</div>
                 </div>
             </div>
             <div class="turn-pill player-turn" id="turn-pill">
                 <span style="font-size:.45rem;letter-spacing:.25em;">TURN</span>
-                <span id="turn-who">SEEKER</span>
+                <span id="turn-who">PLAYER</span>
             </div>
         </div>
 
         <!-- Status bar -->
-        <div class="status-bar" id="status-bar">Pick a tile from your hand, rotate, then place it on the board.</div>
+        <div class="status-bar" id="status-bar">Pick a stone, rotate it, then place it on the board.</div>
 
         <!-- Main layout -->
         <div class="game-layout">
             <!-- Left: hand + controls -->
             <div class="left-panel">
                 <div class="panel-box">
-                    <div class="panel-label">YOUR HAND</div>
+                    <div class="panel-label">YOUR STONES</div>
                     <div class="hand-grid" id="hand-grid"></div>
                     <div class="rotate-row">
                         <button class="btn" id="rot-left" onclick="rotateSelected(-1)"
@@ -1468,16 +1509,15 @@
                 </button>
 
                 <div class="panel-box" style="font-size:.65rem;color:var(--text);gap:6px;">
-                    <div class="panel-label">QUICK GUIDE</div>
-                    <div>Pick tile → Rotate → Place</div>
-                    <div>Your edge <strong style="color:var(--player);">beats</strong> their edge → capture</div>
-                    <div><strong style="color:var(--gold);">Chain reactions</strong> cascade!</div>
+                    <div class="panel-label">SKYSTONES GUIDE</div>
+                    <div>Higher blade count <strong style="color:var(--player);">captures</strong> adjacent stones.</div>
+                    <div>Captured stones <strong style="color:var(--ai);">do not</strong> chain reaction.</div>
                     <div style="margin-top:4px;"><strong style="color:var(--gold);">Element Bonus:</strong></div>
                     <div class="elem-row"><span style="color:var(--fire)">🔥</span> &gt; <span
                             style="color:var(--earth)">🌿</span> &gt; <span style="color:var(--wind)">🌬️</span> &gt;
                         <span style="color:var(--water)">💧</span> &gt; 🔥
                     </div>
-                    <div style="font-size:.58rem;margin-top:2px;">Type advantage = +1 on compare</div>
+                    <div style="font-size:.58rem;margin-top:2px;">Element advantage adds +1 to your blades.</div>
                 </div>
             </div>
 
@@ -1487,7 +1527,7 @@
                 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;">
                     <div
                         style="font-family:'Orbitron',monospace;font-size:.48rem;letter-spacing:.35em;color:var(--text);background:var(--surf2);border:1px solid var(--border);border-radius:20px;padding:3px 12px;">
-                        SPRINT 2 · COUNCIL UPDATE</div>
+                        SKYSTONES CLASSIC · 3x3</div>
                 </div>
             </div>
 
@@ -1495,8 +1535,8 @@
             <div class="right-panel">
                 <div class="ai-box">
                     <div class="ai-portrait" id="ai-portrait">🤖</div>
-                    <div class="ai-name">ORACLE</div>
-                    <div class="ai-title">The Adversarial Mind</div>
+                    <div class="ai-name">CPU</div>
+                    <div class="ai-title">Portal Guard</div>
                     <div class="ai-label">ELEMENT</div>
                     <div id="ai-element-chip"></div>
                     <div class="ai-stones" id="ai-stones-label">Stones: —</div>
@@ -1508,7 +1548,7 @@
                     <div class="elem-row">🌿 <span style="color:var(--earth)">Earth</span> beats 🌬️ Wind</div>
                     <div class="elem-row">🌬️ <span style="color:var(--wind)">Wind</span> beats 💧 Water</div>
                     <div class="elem-row">💧 <span style="color:var(--water)">Water</span> beats 🔥 Fire</div>
-                    <div style="margin-top:8px;font-size:.6rem;">Advantage = +1 to<br>your comparing edge.</div>
+                    <div style="margin-top:8px;font-size:.6rem;">Advantage = +1 to<br>your comparing blades.</div>
                 </div>
             </div>
         </div>
@@ -1524,7 +1564,7 @@
             <div class="new-stone-box" id="res-stone" style="display:none;"></div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
                 <button class="btn primary" onclick="replayGame()">▶ REMATCH</button>
-                <button class="btn gold" onclick="showCharSelect()">⚔ NEW COUNCILOR</button>
+                <button class="btn gold" onclick="showCharSelect()">⚔ NEW SKYLANDER</button>
                 <button class="btn" onclick="showMenu()">☰ MENU</button>
             </div>
         </div>
@@ -1535,21 +1575,13 @@
         <div class="result-card" style="max-width:480px;gap:10px;text-align:left;padding:32px 36px;">
             <div
                 style="font-family:'Cinzel',serif;font-size:1.4rem;font-weight:900;text-align:center;color:var(--gold);">
-                RULES OF AETHERSTONES</div>
+                SKYSTONES RULES</div>
             <div style="font-size:.78rem;line-height:1.8;color:var(--text-hi);">
-                <p><strong style="color:var(--gold);">Goal:</strong> Control more tiles than the Oracle when the board
-                    is full.</p>
-                <p style="margin-top:8px;"><strong style="color:var(--gold);">On your turn:</strong> Pick a tile from
-                    your hand, rotate it (CCW/CW), then click an empty cell to place it.</p>
-                <p style="margin-top:8px;"><strong style="color:var(--gold);">Capture:</strong> When you place a tile
-                    next to an enemy tile, your edge is compared to theirs. If yours is higher (with element modifier),
-                    you take their tile. Your tile stays rotated as placed.</p>
-                <p style="margin-top:8px;"><strong style="color:var(--gold);">Chain Reaction:</strong> Captured tiles
-                    immediately check all THEIR neighbors — captures cascade in a single placement!</p>
-                <p style="margin-top:8px;"><strong style="color:var(--gold);">Element Advantage:</strong> 🔥 beats 🌿,
-                    🌿 beats 🌬️, 🌬️ beats 💧, 💧 beats 🔥. Advantage gives +1 to your edge comparison.</p>
-                <p style="margin-top:8px;"><strong style="color:var(--gold);">Ability:</strong> Each councilor has one
-                    unique power, usable once per battle. Use it wisely.</p>
+                <p><strong style="color:var(--gold);">Goal:</strong> Control more stones than the opponent when the 3x3 board is full.</p>
+                <p style="margin-top:8px;"><strong style="color:var(--gold);">On your turn:</strong> Pick a stone from your hand, rotate it, then place it on an empty board cell.</p>
+                <p style="margin-top:8px;"><strong style="color:var(--gold);">Capture:</strong> When you place a stone next to an enemy stone, your blades are compared. If your blade count is higher, you capture their stone. Elements add +1 to your count if you have the advantage.</p>
+                <p style="margin-top:8px;"><strong style="color:var(--gold);">No Chain Reactions:</strong> Captured stones do not capture their own neighbors. Only the stone currently being played can capture stones.</p>
+                <p style="margin-top:8px;"><strong style="color:var(--gold);">Abilities:</strong> Each Skylander has one unique power usable once per battle.</p>
             </div>
             <button class="btn primary" onclick="hideRules()" style="align-self:center;margin-top:8px;">GOT IT</button>
         </div>
@@ -1557,105 +1589,85 @@
 
     <script>
         /* ═══════════════════════════════════════════════════
-           DATA — CHARACTERS
+           DATA — SKYLANDERS ROSTER
         ═══════════════════════════════════════════════════ */
         const CHARS = [
             {
-                id: 'amicus', name: 'Amicus Amanita', title: 'The Mushroom Wizard',
-                element: 'earth', icon: '🍄', class: 'Wizard', role: 'Summoner',
+                id: 'terrafin', name: 'Terrafin', title: 'Earth Brawler',
+                element: 'earth', icon: '🦈', class: 'Brawler', role: 'Attacker',
                 color: 'var(--earth)', unlockLevel: 1,
-                abilityName: 'MYCELIUM SURGE',
-                abilityDesc: 'All your tiles gain +1 to every edge this turn.',
+                abilityName: 'SAND DIVE',
+                abilityDesc: 'Current stone becomes immune to capture for this match.',
                 abilityMode: 'instant',
-                tileProfile: { min: 3, max: 6, style: 'even' },
-                flavour: 'The network remembers.',
+                tileProfile: { n: 3, e: 2, s: 3, w: 2 },
+                flavour: 'Feeding time!',
             },
             {
-                id: 'nasus', name: 'Nasus Petreus', title: 'The Magician',
-                element: 'earth', icon: '🗿', class: 'Magician', role: 'Defender',
-                color: 'var(--earth)', unlockLevel: 1,
-                abilityName: 'PETRIFY',
-                abilityDesc: 'Click one of your tiles. It becomes immune to capture.',
-                abilityMode: 'target-own',
-                tileProfile: { min: 4, max: 7, style: 'defensive' },
-                flavour: 'Stone does not move. Stone endures.',
-            },
-            {
-                id: 'exstinctor', name: 'Exstinctor Gaudii', title: 'The Fish Enchanter',
-                element: 'water', icon: '🐟', class: 'Enchanter', role: 'Debuffer',
-                color: 'var(--water)', unlockLevel: 2,
-                abilityName: "JOY'S END",
-                abilityDesc: 'All enemy tiles on board lose 1 from their highest edge.',
+                id: 'gillgrunt', name: 'Gill Grunt', title: 'Water Soldier',
+                element: 'water', icon: '🐟', class: 'Soldier', role: 'Balanced',
+                color: 'var(--water)', unlockLevel: 1,
+                abilityName: 'WATER BLAST',
+                abilityDesc: 'Reduces all edges of an adjacent enemy stone by 1.',
                 abilityMode: 'instant',
-                tileProfile: { min: 1, max: 7, style: 'high-low' },
-                flavour: 'What floats will be drowned.',
+                tileProfile: { n: 2, e: 3, s: 2, w: 3 },
+                flavour: 'Fear the fish!',
             },
             {
-                id: 'pepo', name: 'Pepo Mucida', title: 'The Gourd Mage',
-                element: 'water', icon: '🎃', class: 'Mage', role: 'Healer',
-                color: 'var(--water)', unlockLevel: 3,
-                abilityName: 'FERMENTATION',
-                abilityDesc: 'Your weakest-edge tiles each gain +2 on their lowest edge.',
-                abilityMode: 'instant',
-                tileProfile: { min: 2, max: 6, style: 'adaptive' },
-                flavour: 'Decay feeds what blooms.',
-            },
-            {
-                id: 'flatus', name: 'Flatus in Vitro', title: 'The Wind Wizard',
-                element: 'wind', icon: '🌀', class: 'Wizard', role: 'Controller',
-                color: 'var(--wind)', unlockLevel: 1,
-                abilityName: 'REDIRECT',
-                abilityDesc: 'Click two board tiles to swap their positions.',
-                abilityMode: 'swap',
-                tileProfile: { min: 2, max: 7, style: 'polarized' },
-                flavour: 'Nothing stays where you put it.',
-            },
-            {
-                id: 'vir', name: 'Vir Mirificus', title: 'The Unusual Magician',
-                element: 'wind', icon: '🃏', class: 'Magician', role: 'Trickster',
-                color: 'var(--wind)', unlockLevel: 3,
-                abilityName: 'WILD DRAW',
-                abilityDesc: 'Replace your entire hand with high-value random tiles.',
-                abilityMode: 'instant',
-                tileProfile: { min: 1, max: 7, style: 'chaotic' },
-                flavour: 'Order is a polite fiction.',
-            },
-            {
-                id: 'sitra', name: 'Sitra Ferrea Ambulans', title: 'The Metal Sorcerer',
-                element: 'fire', icon: '⚙️', class: 'Sorcerer', role: 'Blaster',
-                color: 'var(--fire)', unlockLevel: 1,
-                abilityName: 'FORGE BLAST',
-                abilityDesc: 'Your next placed tile captures all adjacent tiles automatically.',
-                abilityMode: 'instant',
-                tileProfile: { min: 1, max: 7, style: 'spike' },
-                flavour: 'The forge has no mercy.',
-            },
-            {
-                id: 'lacerta', name: 'Lacerta Veneficus', title: 'The Reptile Mage',
-                element: 'fire', icon: '🦎', class: 'Mage', role: 'Buffer',
+                id: 'ignitor', name: 'Ignitor', title: 'Fire Knight',
+                element: 'fire', icon: '🔥', class: 'Knight', role: 'Attacker',
                 color: 'var(--fire)', unlockLevel: 2,
-                abilityName: 'VENOM SURGE',
-                abilityDesc: 'Your tiles adjacent to other friendly tiles get +2 on their attacking edges.',
+                abilityName: 'FLAME SURGE',
+                abilityDesc: 'Boosts all edges of your stones on board by +1.',
                 abilityMode: 'instant',
-                tileProfile: { min: 2, max: 6, style: 'cluster' },
-                flavour: 'Cold blood, warm strategy.',
+                tileProfile: { n: 4, e: 1, s: 4, w: 1 },
+                flavour: 'Slash and burn!',
             },
+            {
+                id: 'jetvac', name: 'Jet-Vac', title: 'Air Pilot',
+                element: 'wind', icon: '🦅', class: 'Pilot', role: 'Controller',
+                color: 'var(--wind)', unlockLevel: 2,
+                abilityName: 'VACUUM SPIN',
+                abilityDesc: 'Swaps the position of any two stones on the board.',
+                abilityMode: 'swap',
+                tileProfile: { n: 1, e: 4, s: 1, w: 4 },
+                flavour: 'Hawk and awe!',
+            },
+            {
+                id: 'spyro', name: 'Spyro', title: 'Magic Dragon',
+                element: 'magic', icon: '🐉', class: 'Dragon', role: 'Specialist',
+                color: 'var(--magic)', unlockLevel: 3,
+                abilityName: 'FIRE BREATH',
+                abilityDesc: 'Transforms all empty cells into high-power magic stones.',
+                abilityMode: 'instant',
+                tileProfile: { n: 3, e: 3, s: 3, w: 3 },
+                flavour: 'All fired up!',
+            },
+            {
+                id: 'tree-rex', name: 'Tree Rex', title: 'Life Giant',
+                element: 'earth', icon: '🌳', class: 'Giant', role: 'Defender',
+                color: 'var(--earth)', unlockLevel: 4,
+                abilityName: 'PETRIFY',
+                abilityDesc: 'Makes one of your stones permanently uncapturable.',
+                abilityMode: 'target-own',
+                tileProfile: { n: 4, e: 4, s: 4, w: 4 },
+                flavour: 'Be afraid of the bark!',
+            }
         ];
 
         /* Element advantage wheel */
-        const ELEM_BEATS = { fire: 'earth', earth: 'wind', wind: 'water', water: 'fire' };
+        const ELEM_BEATS = { fire: 'earth', earth: 'wind', wind: 'water', water: 'fire', magic: 'none' };
 
         /* AI opponent data */
         const AI_CHAR = {
-            name: 'Oracle', title: 'The Adversarial Mind',
-            icon: '🤖', element: 'fire',
-            tileProfile: { min: 2, max: 7, style: 'adaptive' }
+            name: 'Portal Guard', title: 'The Gatekeeper',
+            icon: '🛡️', element: 'fire',
+            tileProfile: { n: 2, e: 2, s: 2, w: 2 }
         };
 
         /* ═══════════════════════════════════════════════════
            PERSISTENCE
         ═══════════════════════════════════════════════════ */
-        const SAVE_KEY = 'aetherstones_v1';
+        const SAVE_KEY = 'skystones_v1';
         let save = loadSave();
 
         function defaultSave() {
@@ -1686,7 +1698,7 @@
         /* ═══════════════════════════════════════════════════
            GAME STATE
         ═══════════════════════════════════════════════════ */
-        const BS = 4;
+        const BS = 3;
         let gs = {}; // game state
 
         function freshGameState(char) {
@@ -1700,11 +1712,10 @@
                 turn: 'player',
                 animating: false,
                 abilityUsed: false,
-                abilityActive: false,    // true while waiting for target
-                abilityTargets: [],      // for swap ability
-                petrified: new Set(),    // "r,c" keys
-                forgeBlastArmed: false,
-                pendingPlacement: null,  // {r, c, tileIdx, rot, timer}
+                abilityActive: false,
+                abilityTargets: [],
+                petrified: new Set(),
+                pendingPlacement: null,
             };
         }
 
@@ -1715,19 +1726,8 @@
         function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
 
         function genTileForProfile(profile, element) {
-            let n, e, s, w;
-            switch (profile.style) {
-                case 'even': n = rnd(3, 6); e = rnd(3, 6); s = rnd(3, 6); w = rnd(3, 6); break;
-                case 'defensive': n = rnd(4, 7); e = rnd(4, 7); s = rnd(4, 7); w = rnd(4, 7); break;
-                case 'high-low': n = rnd(1, 7); e = rnd(1, 7); s = rnd(1, 7); w = rnd(1, 7); break;
-                case 'polarized': { const hi = rnd(5, 7), lo = rnd(1, 3); n = hi; e = lo; s = hi; w = lo; break; }
-                case 'spike': { const dir = rnd(0, 3); const arr = [rnd(1, 3), rnd(1, 3), rnd(1, 3), rnd(1, 3)]; arr[dir] = rnd(6, 7);[n, e, s, w] = arr; break; }
-                case 'adaptive': n = rnd(2, 6); e = rnd(2, 6); s = rnd(2, 6); w = rnd(2, 6); break;
-                case 'chaotic': n = rnd(1, 7); e = rnd(1, 7); s = rnd(1, 7); w = rnd(1, 7); break;
-                case 'cluster': n = rnd(2, 6); e = rnd(2, 6); s = rnd(2, 6); w = rnd(2, 6); break;
-                default: n = rnd(1, 7); e = rnd(1, 7); s = rnd(1, 7); w = rnd(1, 7);
-            }
-            return { id: ++_tileId, element, n, e, s, w };
+            // Profile is now explicit blades
+            return { id: ++_tileId, element, ...profile };
         }
 
         function rotateCW(t) { return { ...t, n: t.w, e: t.n, s: t.e, w: t.s }; }
@@ -1761,31 +1761,23 @@
         function captureFrom(r, c, board, petrified, forceCapture = false) {
             const placed = board[r][c];
             const captured = [];
-            const visited = new Set([`${r},${c}`]);
-            const queue = [{ r, c, tile: placed }];
 
-            while (queue.length) {
-                const { r: cr, c: cc, tile: ct } = queue.shift();
-                ADJ.forEach(({ dr, dc, mine, theirs }) => {
-                    const nr = cr + dr, nc = cc + dc;
-                    if (nr < 0 || nr >= BS || nc < 0 || nc >= BS) return;
-                    const nb = board[nr][nc];
-                    if (!nb || nb.owner === ct.owner) return;
-                    if (petrified.has(`${nr},${nc}`)) return;
-                    const key = `${nr},${nc}`;
-                    if (visited.has(key)) return;
+            // In authentic Skystones, only the placed stone captures adjacent ones.
+            // There are NO chain reactions (cascades).
+            ADJ.forEach(({ dr, dc, mine, theirs }) => {
+                const nr = r + dr, nc = c + dc;
+                if (nr < 0 || nr >= BS || nc < 0 || nc >= BS) return;
+                const nb = board[nr][nc];
+                if (!nb || nb.owner === placed.owner) return;
+                if (petrified.has(`${nr},${nc}`)) return;
 
-                    const myVal = ct[mine] + (forceCapture ? 100 : elemBonus(ct.element, nb.element));
-                    const theirVal = nb[theirs];
-                    if (forceCapture || myVal > theirVal) {
-                        visited.add(key);
-                        const flipped = { ...nb, owner: ct.owner };
-                        board[nr][nc] = flipped;
-                        captured.push({ r: nr, c: nc });
-                        queue.push({ r: nr, c: nc, tile: flipped });
-                    }
-                });
-            }
+                const myVal = placed[mine] + (forceCapture ? 100 : elemBonus(placed.element, nb.element));
+                const theirVal = nb[theirs];
+                if (forceCapture || myVal > theirVal) {
+                    board[nr][nc] = { ...nb, owner: placed.owner };
+                    captured.push({ r: nr, c: nc });
+                }
+            });
             return captured;
         }
 
@@ -1802,12 +1794,11 @@
             showScreen('screen-game');
             buildGameUI();
             renderAll();
-            setStatus('Pick a tile, rotate it, then place it on the board.');
+            setStatus('Pick a stone, rotate it, then place it on the board.');
         }
 
         function buildGameUI() {
             const c = gs.char;
-            // Strip
             const sp = document.getElementById('strip-portrait');
             sp.textContent = c.icon;
             sp.style.background = `radial-gradient(circle, ${c.color}22, #00000088)`;
@@ -1815,16 +1806,14 @@
             document.getElementById('strip-name').textContent = c.name;
             document.getElementById('strip-title').textContent = c.title;
 
-            // Ability button
             const ab = document.getElementById('ability-btn');
             ab.className = `ability-btn ${c.element}`;
             document.getElementById('ab-name').textContent = c.abilityName;
             document.getElementById('ab-desc').textContent = c.abilityDesc;
 
-            // AI panel
             document.getElementById('ai-portrait').textContent = AI_CHAR.icon;
             const aec = document.getElementById('ai-element-chip');
-            aec.innerHTML = `<span class="chip ${AI_CHAR.element}">${{ fire: '🔥', earth: '🌿', wind: '🌬️', water: '💧' }[AI_CHAR.element]} ${AI_CHAR.element.toUpperCase()}</span>`;
+            aec.innerHTML = `<span class="chip ${AI_CHAR.element}">${{ fire: '🔥', earth: '🌿', wind: '🌬️', water: '💧', magic: '🔮' }[AI_CHAR.element]} ${AI_CHAR.element.toUpperCase()}</span>`;
             document.getElementById('ai-stones-label').textContent = `Stones: ${save.charData[c.id]?.stoneCount || 8}`;
         }
 
@@ -1860,32 +1849,17 @@
                         const emp = document.createElement('div');
                         emp.className = 'tile-empty tile-shape';
                         cell.appendChild(emp);
-                        // Placeable during normal mode
                         if (gs.turn === 'player' && !gs.animating && !gs.abilityActive && !gs.pendingPlacement) {
                             cell.classList.add('placeable');
-                            // Allow click as fallback? Or maybe just drag drop. Let's keep click if selected.
                             cell.addEventListener('click', () => onCellClick(r, c));
-
-                            // Drag and Drop
-                            cell.addEventListener('dragover', (e) => {
-                                e.preventDefault();
-                                cell.classList.add('drag-over');
-                            });
-                            cell.addEventListener('dragleave', () => cell.classList.remove('drag-over'));
-                            cell.addEventListener('drop', (e) => handleTileDrop(e, r, c));
                         }
                     }
 
-                    // Ability target modes
                     if (gs.abilityActive) {
                         const char = gs.char;
                         if (char.abilityMode === 'target-own' && t && t.owner === 'player') {
                             cell.classList.add('ability-selectable');
                             cell.addEventListener('click', () => abilityTargetOwn(r, c));
-                        }
-                        if (char.abilityMode === 'swap' && t) {
-                            cell.classList.add('ability-selectable');
-                            cell.addEventListener('click', () => abilityTargetSwap(r, c));
                         }
                     }
 
@@ -1893,21 +1867,16 @@
                 }
             }
 
-            // Render pending floating tile if exists
             if (gs.pendingPlacement) {
                 const { r, c, tileIdx, rot } = gs.pendingPlacement;
                 const cell = el.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
                 if (cell) {
-                    // Remove empty tile visual
                     cell.innerHTML = '';
-
                     const base = gs.playerHand[tileIdx];
                     const t = { ...rotateTile(base, rot), owner: 'player', id: base.id };
                     const tileEl = makePlacedTile(t, r, c);
                     tileEl.classList.add('tile-floating');
-                    // Click to rotate pending
                     tileEl.addEventListener('click', () => rotatePending());
-
                     cell.appendChild(tileEl);
                 }
             }
@@ -1922,11 +1891,6 @@
             const isPlayer = t.owner === 'player';
             const petr = gs.petrified.has(`${r},${c}`);
             inner.className = `tile-inner ${isPlayer ? 'pt' : 'at'} elem-${t.element}${petr ? ' petrified' : ''}`;
-
-            // Swap targets highlight
-            if (gs.abilityActive && gs.abilityTargets.includes(`${r},${c}`)) {
-                inner.style.outline = '3px solid #ff00ff';
-            }
 
             ['n', 'e', 's', 'w'].forEach(d => {
                 const sp = document.createElement('span');
@@ -1952,39 +1916,20 @@
                 const wrap = document.createElement('div');
                 wrap.className = 'hand-tile-wrap' + (i === gs.selectedIdx ? ' selected' : '');
 
-                // Hide if pending placement
                 if (gs.pendingPlacement && gs.pendingPlacement.tileIdx === i) {
                     wrap.style.opacity = '0';
                     wrap.style.pointerEvents = 'none';
                 }
 
-                // Show rotated display
                 const display = i === gs.selectedIdx ? rotateTile(t, gs.selRotation) : t;
                 const tileEl = makePlacedTile({ ...display, owner: 'player', id: t.id }, -1, -1);
-
-                // Draggable
-                if (gs.turn === 'player' && !gs.animating && !gs.abilityActive && !gs.pendingPlacement) {
-                    tileEl.draggable = true;
-                    tileEl.addEventListener('dragstart', (e) => {
-                        gs.selectedIdx = i; // Select on drag
-                        gs.selRotation = 0; // Reset rotation on new pick
-                        e.dataTransfer.setData('text/plain', JSON.stringify({ index: i, rot: 0 }));
-                        e.dataTransfer.effectAllowed = 'move';
-                        // Visual feedback
-                        setTimeout(() => wrap.style.opacity = '0.5', 0);
-                        renderHand(); renderBoard(); // Highlight drop zones
-                    });
-                    tileEl.addEventListener('dragend', () => {
-                        wrap.style.opacity = '1';
-                    });
-                }
 
                 wrap.appendChild(tileEl);
                 wrap.addEventListener('click', () => selectTile(i));
 
                 const lbl = document.createElement('div');
                 lbl.className = 'hand-slot-num';
-                lbl.textContent = i === gs.selectedIdx ? `ROT×${gs.selRotation}` : `T-${i + 1}`;
+                lbl.textContent = i === gs.selectedIdx ? `ROT×${gs.selRotation}` : `S-${i + 1}`;
 
                 slot.appendChild(wrap);
                 slot.appendChild(lbl);
@@ -2005,9 +1950,9 @@
             const pill = document.getElementById('turn-pill');
             const who = document.getElementById('turn-who');
             if (gs.turn === 'player') {
-                pill.className = 'turn-pill player-turn'; who.textContent = 'SEEKER';
+                pill.className = 'turn-pill player-turn'; who.textContent = 'PLAYER';
             } else {
-                pill.className = 'turn-pill ai-turn'; who.textContent = 'ORACLE';
+                pill.className = 'turn-pill ai-turn'; who.textContent = 'CPU';
             }
         }
 
@@ -2032,21 +1977,19 @@
             if (gs.selectedIdx === i) { gs.selectedIdx = -1; gs.selRotation = 0; }
             else { gs.selectedIdx = i; gs.selRotation = 0; }
             renderBoard(); renderHand(); updateAbilityBtn();
-            if (gs.selectedIdx >= 0) setStatus(`Tile ${i + 1} selected (${gs.char.element}). Rotate then click the board.`);
-            else setStatus('Choose a tile from your hand.');
+            if (gs.selectedIdx >= 0) setStatus(`Stone ${i + 1} selected. Click rotation arrows or the board.`);
+            else setStatus('Choose a stone from your hand.');
         }
 
         function rotateSelected(dir) {
             if (gs.turn !== 'player' || gs.animating) return;
-
             if (gs.pendingPlacement) {
                 gs.pendingPlacement.rot = ((gs.pendingPlacement.rot + dir) % 4 + 4) % 4;
                 clearTimeout(gs.pendingPlacement.timer);
-                gs.pendingPlacement.timer = setTimeout(() => commitPlacement(), 2000);
+                gs.pendingPlacement.timer = setTimeout(() => commitPlacement(), 1500);
                 renderBoard();
                 return;
             }
-
             if (gs.selectedIdx < 0) return;
             gs.selRotation = ((gs.selRotation + dir) % 4 + 4) % 4;
             renderHand();
@@ -2055,90 +1998,58 @@
         function onCellClick(r, c) {
             if (gs.turn !== 'player' || gs.animating || gs.selectedIdx < 0) return;
             if (gs.board[r][c]) return;
-
-            // Use the same pending flow as drag-drop for consistency
             startPendingPlacement(r, c, gs.selectedIdx, gs.selRotation);
-        }
-
-        function handleTileDrop(e, r, c) {
-            e.preventDefault();
-            const data = e.dataTransfer.getData('text/plain');
-            if (!data) return;
-            const { index, rot } = JSON.parse(data);
-
-            // Start pending placement
-            startPendingPlacement(r, c, index, rot || 0);
         }
 
         function startPendingPlacement(r, c, index, rot) {
             if (gs.pendingPlacement) clearTimeout(gs.pendingPlacement.timer);
-
-            gs.selectedIdx = -1; // Deselect hand highight
+            gs.selectedIdx = -1;
             gs.pendingPlacement = {
                 r, c, tileIdx: index, rot,
-                timer: setTimeout(() => commitPlacement(), 2500) // 1.5s wait + buffer
+                timer: setTimeout(() => commitPlacement(), 1500)
             };
-
             renderAll();
-            setStatus('Tile floating! Rotate to adjust, or wait for it to sink...');
+            setStatus('Stone floating! Adjust rotation or wait for it to sink...');
         }
 
         function rotatePending() {
             if (!gs.pendingPlacement) return;
             gs.pendingPlacement.rot = (gs.pendingPlacement.rot + 1) % 4;
-
-            // Reset timer on interaction? 
-            // User req: "wait a little bit... allow rotation... then after 1-2s sink"
-            // Let's reset timer to give them time if they are actively rotating
             clearTimeout(gs.pendingPlacement.timer);
-            gs.pendingPlacement.timer = setTimeout(() => commitPlacement(), 2000);
-
+            gs.pendingPlacement.timer = setTimeout(() => commitPlacement(), 1500);
             renderBoard();
         }
 
         function commitPlacement() {
             if (!gs.pendingPlacement) return;
             const { r, c, tileIdx, rot } = gs.pendingPlacement;
-
-            // Animate sink
             const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"] .tile-placed`);
             if (cell) {
                 cell.classList.remove('tile-floating');
                 cell.classList.add('tile-sinking');
             }
-
             setTimeout(() => {
                 gs.pendingPlacement = null;
                 const base = gs.playerHand[tileIdx];
                 const tile = { ...rotateTile(base, rot), owner: 'player' };
-
-                // Proceed with logic
-                placeAndCapture(r, c, tile, gs.forgeBlastArmed, () => {
-                    gs.forgeBlastArmed = false;
+                placeAndCapture(r, c, tile, false, () => {
                     gs.playerHand.splice(tileIdx, 1);
                     gs.playerHand.push(genTileForProfile(gs.char.tileProfile, gs.char.element));
                     updateScores();
                     if (checkGameOver()) return;
                     gs.turn = 'ai';
                     updateTurnUI();
-                    setStatus('<span class="thinking">Oracle is calculating…</span>');
-                    setTimeout(doAI, 900);
+                    setStatus('<span class="thinking">CPU is moving…</span>');
+                    setTimeout(doAI, 800);
                 });
-            }, 500); // Wait for sink animation
+            }, 400);
         }
 
-        /* ═══════════════════════════════════════════════════
-           PLACE + CAPTURE
-        ═══════════════════════════════════════════════════ */
         function placeAndCapture(r, c, tile, force, callback) {
             gs.animating = true;
             gs.board[r][c] = tile;
             renderAll();
-
             const captured = captureFrom(r, c, gs.board, gs.petrified, force);
-
-            const delay = captured.length > 0 ? 150 * Math.min(captured.length, 5) + 250 : 200;
-
             if (captured.length > 0) {
                 captured.forEach(({ r: cr, c: cc }, idx) => {
                     setTimeout(() => {
@@ -2148,13 +2059,13 @@
                             const inner = el.querySelector('.tile-inner');
                             if (inner) inner.classList.add('capturing');
                         }
-                    }, idx * 140);
+                    }, idx * 100);
                 });
                 setTimeout(() => {
                     renderAll();
                     gs.animating = false;
                     if (callback) callback();
-                }, delay);
+                }, 600);
             } else {
                 setTimeout(() => {
                     renderAll();
@@ -2170,145 +2081,45 @@
         function activateAbility() {
             if (gs.abilityUsed || gs.turn !== 'player' || gs.animating) return;
             const char = gs.char;
-
             if (char.abilityMode === 'instant') {
                 applyInstantAbility(char.id);
                 gs.abilityUsed = true;
                 updateAbilityBtn();
                 return;
             }
-
-            // Enter targeting mode
             gs.abilityActive = true;
-            gs.abilityTargets = [];
-            if (char.abilityMode === 'target-own') {
-                setStatus(`⬡ PETRIFY — Click one of your tiles to make it immune.`);
-            }
-            if (char.abilityMode === 'swap') {
-                setStatus(`🌀 REDIRECT — Click two tiles on the board to swap them.`);
-            }
+            if (char.abilityMode === 'target-own') setStatus(`PETRIFY — Click one of your stones.`);
+            if (char.abilityMode === 'swap') setStatus(`VACUUM — Click two stones to swap.`);
             renderBoard(); updateAbilityBtn();
         }
 
         function applyInstantAbility(id) {
             switch (id) {
-                case 'amicus': {
-                    // All player tiles +1 all edges
+                case 'ignitor':
                     for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
                         const t = gs.board[r][c];
                         if (t && t.owner === 'player') {
-                            t.n = Math.min(7, t.n + 1); t.e = Math.min(7, t.e + 1);
-                            t.s = Math.min(7, t.s + 1); t.w = Math.min(7, t.w + 1);
+                            t.n++; t.e++; t.s++; t.w++;
                         }
                     }
-                    setStatus('🍄 Mycelium Surge — all your tiles boosted +1!');
+                    setStatus('🔥 Flame Surge — All stones boosted!');
                     break;
-                }
-                case 'exstinctor': {
-                    // Enemy tiles lose 1 from highest edge
+                case 'spyro':
                     for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
-                        const t = gs.board[r][c];
-                        if (t && t.owner === 'ai') {
-                            const dirs = ['n', 'e', 's', 'w'];
-                            const maxDir = dirs.reduce((a, b) => t[a] >= t[b] ? a : b);
-                            t[maxDir] = Math.max(1, t[maxDir] - 1);
-                        }
+                        if (!gs.board[r][c]) gs.board[r][c] = { id: ++_tileId, element: 'magic', owner: 'player', n: 3, e: 3, s: 3, w: 3 };
                     }
-                    setStatus("🐟 Joy's End — enemy morale sapped!");
+                    setStatus('🐉 Fire Breath — Board filled with magic!');
                     break;
-                }
-                case 'pepo': {
-                    // Weakest-edge tiles get +2 on their lowest edge
-                    for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
-                        const t = gs.board[r][c];
-                        if (t && t.owner === 'player') {
-                            const dirs = ['n', 'e', 's', 'w'];
-                            const minDir = dirs.reduce((a, b) => t[a] <= t[b] ? a : b);
-                            if (t[minDir] <= 3) t[minDir] = Math.min(7, t[minDir] + 2);
-                        }
-                    }
-                    // Also boost hand
-                    gs.playerHand.forEach(t => {
-                        const dirs = ['n', 'e', 's', 'w'];
-                        const minDir = dirs.reduce((a, b) => t[a] <= t[b] ? a : b);
-                        t[minDir] = Math.min(7, t[minDir] + 2);
-                    });
-                    setStatus('🎃 Fermentation — weak edges fermented into strength!');
-                    break;
-                }
-                case 'vir': {
-                    // Replace hand with 5 high-value tiles
-                    gs.playerHand = Array.from({ length: 5 }, () => {
-                        const t = genTileForProfile({ min: 5, max: 7, style: 'even' }, gs.char.element);
-                        return t;
-                    });
-                    gs.selectedIdx = -1; gs.selRotation = 0;
-                    setStatus('🃏 Wild Draw — chaos delivers power!');
-                    break;
-                }
-                case 'sitra': {
-                    gs.forgeBlastArmed = true;
-                    setStatus('⚙️ Forge Blast ARMED — next tile captures ALL adjacent tiles!');
-                    break;
-                }
-                case 'lacerta': {
-                    // Adjacent friendly clusters get +2 to attacking edges
-                    const boosted = new Set();
-                    for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
-                        const t = gs.board[r][c];
-                        if (!t || t.owner !== 'player') continue;
-                        let hasFriendly = false;
-                        ADJ.forEach(({ dr, dc }) => {
-                            const nr = r + dr, nc = c + dc;
-                            if (nr >= 0 && nr < BS && nc >= 0 && nc < BS && gs.board[nr][nc]?.owner === 'player') hasFriendly = true;
-                        });
-                        if (hasFriendly && !boosted.has(`${r},${c}`)) {
-                            boosted.add(`${r},${c}`);
-                            const dirs = ['n', 'e', 's', 'w'];
-                            const maxDir = dirs.reduce((a, b) => t[a] >= t[b] ? a : b);
-                            t[maxDir] = Math.min(7, t[maxDir] + 2);
-                        }
-                    }
-                    setStatus('🦎 Venom Surge — clustered tiles empowered!');
-                    break;
-                }
             }
             renderAll();
         }
 
         function abilityTargetOwn(r, c) {
-            // Petrify
             gs.petrified.add(`${r},${c}`);
             gs.abilityActive = false;
             gs.abilityUsed = true;
-            setStatus('🗿 Petrified — this tile cannot be captured!');
+            setStatus('🌳 Petrified — Stone is uncapturable!');
             renderBoard(); updateAbilityBtn();
-        }
-
-        function abilityTargetSwap(r, c) {
-            const key = `${r},${c}`;
-            if (gs.abilityTargets.includes(key)) {
-                gs.abilityTargets = gs.abilityTargets.filter(k => k !== key);
-            } else {
-                gs.abilityTargets.push(key);
-            }
-
-            if (gs.abilityTargets.length === 2) {
-                const [k1, k2] = gs.abilityTargets;
-                const [r1, c1] = k1.split(',').map(Number);
-                const [r2, c2] = k2.split(',').map(Number);
-                const tmp = gs.board[r1][c1];
-                gs.board[r1][c1] = gs.board[r2][c2];
-                gs.board[r2][c2] = tmp;
-                gs.abilityTargets = [];
-                gs.abilityActive = false;
-                gs.abilityUsed = true;
-                setStatus('🌀 Redirect — tiles repositioned!');
-                renderAll(); updateAbilityBtn();
-            } else {
-                setStatus('🌀 Redirect — now click the second tile.');
-                renderBoard();
-            }
         }
 
         /* ═══════════════════════════════════════════════════
@@ -2316,24 +2127,18 @@
         ═══════════════════════════════════════════════════ */
         function doAI() {
             if (gs.turn !== 'ai') return;
-
             let best = -Infinity, bestMove = null;
-
             gs.aiHand.forEach((tile, ti) => {
                 for (let rot = 0; rot < 4; rot++) {
                     const rt = rotateTile(tile, rot);
-                    for (let r = 0; r < BS; r++) {
-                        for (let c = 0; c < BS; c++) {
-                            if (gs.board[r][c]) continue;
-                            const score = scoreAIMove(r, c, rt);
-                            if (score > best) { best = score; bestMove = { ti, rot, r, c }; }
-                        }
+                    for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
+                        if (gs.board[r][c]) continue;
+                        const score = scoreAIMove(r, c, rt);
+                        if (score > best) { best = score; bestMove = { ti, rot, r, c }; }
                     }
                 }
             });
-
             if (!bestMove) { endGame(); return; }
-
             const tile = { ...rotateTile(gs.aiHand[bestMove.ti], bestMove.rot), owner: 'ai' };
             placeAndCapture(bestMove.r, bestMove.c, tile, false, () => {
                 gs.aiHand.splice(bestMove.ti, 1);
@@ -2342,7 +2147,7 @@
                 if (checkGameOver()) return;
                 gs.turn = 'player';
                 updateTurnUI(); renderAll();
-                setStatus('Your turn — select, rotate, and place.');
+                setStatus('Your turn!');
             });
         }
 
@@ -2350,26 +2155,19 @@
             let score = 0;
             ADJ.forEach(({ dr, dc, mine, theirs }) => {
                 const nr = r + dr, nc = c + dc;
-                if (nr < 0 || nr >= BS || nc < 0 || nc >= BS) return;
-                const nb = gs.board[nr][nc];
-                if (!nb) return;
-                const bonus = elemBonus(tile.element, nb.element);
-                if (nb.owner === 'player') {
-                    if (tile[mine] + bonus > nb[theirs]) score += 2;
-                    else score -= 1;
-                } else {
-                    score += 0.3; // defensive bonus for adjacency to own tiles
+                if (nr >= 0 && nr < BS && nc >= 0 && nc < BS) {
+                    const nb = gs.board[nr][nc];
+                    if (nb && nb.owner === 'player') {
+                        if (tile[mine] + elemBonus(tile.element, nb.element) > nb[theirs]) score += 2;
+                    }
                 }
             });
-            return score + (Math.random() * .3 - .15);
+            return score + Math.random();
         }
 
-        /* ═══════════════════════════════════════════════════
-           GAME OVER
-        ═══════════════════════════════════════════════════ */
         function checkGameOver() {
             for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) if (!gs.board[r][c]) return false;
-            setTimeout(endGame, 350);
+            setTimeout(endGame, 400);
             return true;
         }
 
@@ -2378,86 +2176,38 @@
             for (let r = 0; r < BS; r++) for (let c = 0; c < BS; c++) {
                 if (gs.board[r][c]) { gs.board[r][c].owner === 'player' ? p++ : a++; }
             }
-
             const win = p > a, draw = p === a;
-            const cid = gs.char.id;
-            save.charData[cid].played++;
-            if (win) save.charData[cid].won++;
-
-            const xpGain = win ? 80 : draw ? 40 : 25;
-            const oldLevel = save.level;
-            addXP(xpGain);
-            const leveledUp = save.level > oldLevel;
-
-            // Award a new stone
-            let newStone = null;
-            if (win || Math.random() < .4) {
-                save.charData[cid].stoneCount++;
-                persistSave();
-                newStone = genTileForProfile(gs.char.tileProfile, gs.char.element);
-            }
-
-            // Show results
+            addXP(win ? 100 : draw ? 50 : 30);
             const title = document.getElementById('res-title');
-            const score = document.getElementById('res-score');
-            const flavour = document.getElementById('res-flavour');
-            const xpEl = document.getElementById('res-xp');
-            const stoneEl = document.getElementById('res-stone');
-
-            if (win) {
-                title.textContent = 'VICTORY'; title.style.color = 'var(--player)';
-                flavour.textContent = gs.char.flavour;
-            } else if (draw) {
-                title.textContent = 'DRAW'; title.style.color = 'var(--gold)';
-                flavour.textContent = 'The stones speak in riddles.';
-            } else {
-                title.textContent = 'DEFEATED'; title.style.color = 'var(--ai)';
-                flavour.textContent = 'The Oracle sees further than you today.';
-            }
-
-            score.textContent = `SEEKER ${p}  ·  ORACLE ${a}`;
-            xpEl.textContent = `+ ${xpGain} XP${leveledUp ? '  ·  LEVEL UP → ' + save.level : ''}`;
-
-            if (newStone) {
-                stoneEl.style.display = 'block';
-                stoneEl.innerHTML = `<strong>NEW STONE ADDED</strong><br>${gs.char.name} now holds ${save.charData[cid].stoneCount} stones.<br><small style="color:var(--text);">${newStone.element} ${newStone.n}/${newStone.e}/${newStone.s}/${newStone.w}</small>`;
-            } else {
-                stoneEl.style.display = 'none';
-            }
-
+            title.textContent = win ? 'VICTORY' : draw ? 'DRAW' : 'DEFEATED';
+            title.style.color = win ? 'var(--player)' : 'var(--ai)';
+            document.getElementById('res-score').textContent = `YOU ${p} - CPU ${a}`;
             document.getElementById('overlay-gameover').classList.add('show');
         }
 
         /* ═══════════════════════════════════════════════════
-           SCREEN NAVIGATION
+           SCREEN NAV
         ═══════════════════════════════════════════════════ */
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
-
         function showMenu() {
             document.getElementById('overlay-gameover').classList.remove('show');
-            document.getElementById('overlay-rules').classList.remove('show');
-            updateMenuUI();
-            showScreen('screen-menu');
+            updateMenuUI(); showScreen('screen-menu');
         }
-
         function updateMenuUI() {
             document.getElementById('menu-level').textContent = save.level;
-            document.getElementById('menu-xp-label').textContent = `${save.xp} / ${save.xpNext} XP`;
             const pct = Math.min(100, (save.xp / save.xpNext) * 100);
             document.getElementById('menu-xp-fill').style.width = pct + '%';
+            document.getElementById('menu-xp-label').textContent = `${save.xp} / ${save.xpNext} XP`;
         }
-
         function showCharSelect() {
             document.getElementById('overlay-gameover').classList.remove('show');
-            selectedChar = null;
             buildCharGrid();
             document.getElementById('charselect-confirm').style.display = 'none';
             showScreen('screen-charselect');
         }
-
         function buildCharGrid() {
             const grid = document.getElementById('char-grid');
             grid.innerHTML = '';
@@ -2466,58 +2216,33 @@
                 const card = document.createElement('div');
                 card.className = `char-card ${c.element}${locked ? ' locked' : ''}`;
                 card.innerHTML = `
-      <div class="char-portrait">${c.icon}</div>
-      <div class="char-name">${c.name}</div>
-      <div class="char-title">${c.title}</div>
-      <div class="char-chips">
-        <span class="chip ${c.element}">${{ earth: '🌿', water: '💧', wind: '🌬️', fire: '🔥' }[c.element]} ${c.element.toUpperCase()}</span>
-        <span class="chip neutral">${c.class}</span>
-        <span class="chip neutral">${c.role}</span>
-      </div>
-      <div class="char-ability-box"><strong>${c.abilityName}</strong><br>${c.abilityDesc}</div>
-      <div class="char-stones">⬡ ${save.charData[c.id]?.stoneCount || 8} STONES</div>
-      ${locked ? `<div class="lock-overlay"><div class="lock-icon">🔒</div><div>LEVEL ${c.unlockLevel} REQUIRED</div></div>` : ''}
-    `;
+                    <div class="char-portrait">${c.icon}</div>
+                    <div class="char-name">${c.name}</div>
+                    <div class="char-chips">
+                        <span class="chip ${c.element}">${c.element.toUpperCase()}</span>
+                    </div>
+                    <div class="char-ability-box"><strong>${c.abilityName}</strong><br>${c.abilityDesc}</div>
+                    ${locked ? `<div class="lock-overlay"><div class="lock-icon">🔒</div><div>LEVEL ${c.unlockLevel}</div></div>` : ''}
+                `;
                 if (!locked) card.addEventListener('click', () => selectCharCard(c.id));
                 grid.appendChild(card);
             });
         }
-
         function selectCharCard(id) {
             selectedChar = CHARS.find(c => c.id === id);
             document.querySelectorAll('.char-card').forEach(el => el.classList.remove('selected'));
-            const cards = document.querySelectorAll('.char-card');
-            CHARS.forEach((c, i) => { if (c.id === id) cards[i].classList.add('selected'); });
-
-            // Show confirm panel
-            document.getElementById('confirm-name').textContent = selectedChar.name + ' — ' + selectedChar.title;
-            document.getElementById('confirm-chips').innerHTML = `
-    <span class="chip ${selectedChar.element}">${{ earth: '🌿', water: '💧', wind: '🌬️', fire: '🔥' }[selectedChar.element]} ${selectedChar.element.toUpperCase()}</span>
-    <span class="chip neutral">${selectedChar.class}</span>
-    <span class="chip neutral">${selectedChar.role}</span>
-    <span class="chip neutral">⬡ ${save.charData[selectedChar.id]?.stoneCount || 8} stones</span>
-  `;
-            document.getElementById('confirm-ability').innerHTML = `<strong style="color:var(--gold);">${selectedChar.abilityName}:</strong> ${selectedChar.abilityDesc}`;
+            document.getElementById('confirm-name').textContent = selectedChar.name;
+            document.getElementById('confirm-chips').innerHTML = `<span class="chip ${selectedChar.element}">${selectedChar.element.toUpperCase()}</span>`;
+            document.getElementById('confirm-ability').innerHTML = `<strong>${selectedChar.abilityName}:</strong> ${selectedChar.abilityDesc}`;
             document.getElementById('charselect-confirm').style.display = 'flex';
         }
-
         function cancelSelect() {
             selectedChar = null;
-            document.querySelectorAll('.char-card').forEach(el => el.classList.remove('selected'));
             document.getElementById('charselect-confirm').style.display = 'none';
         }
+        function showRules() { document.getElementById('overlay-rules').classList.add('show'); }
+        function hideRules() { document.getElementById('overlay-rules').classList.remove('show'); }
 
-        function showRules() {
-            document.getElementById('overlay-rules').classList.add('show');
-        }
-        function hideRules() {
-            document.getElementById('overlay-rules').classList.remove('show');
-        }
-
-        /* ═══════════════════════════════════════════════════
-           INIT
-        ═══════════════════════════════════════════════════ */
-        updateMenuUI();
         showScreen('screen-menu');
     </script>
 </body>
