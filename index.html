@@ -1892,11 +1892,17 @@
             const petr = gs.petrified.has(`${r},${c}`);
             inner.className = `tile-inner ${isPlayer ? 'pt' : 'at'} elem-${t.element}${petr ? ' petrified' : ''}`;
 
+            const ownerPrefix = isPlayer ? 'player1' : 'player2';
+
             ['n', 'e', 's', 'w'].forEach(d => {
-                const sp = document.createElement('span');
-                sp.className = `ev ev-${d}`;
-                sp.textContent = t[d];
-                inner.appendChild(sp);
+                const img = document.createElement('img');
+                const val = t[d];
+                img.src = `images/skystones/spikes_${ownerPrefix}_${val}.png`;
+                img.className = `ev ev-${d}`;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'contain';
+                inner.appendChild(img);
             });
 
             const dot = document.createElement('div');
